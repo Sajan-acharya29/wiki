@@ -1,4 +1,6 @@
 from flask import render_template
+from flask import request
+import hashlib
 
 
 def make_endpoints(app):
@@ -17,5 +19,21 @@ def make_endpoints(app):
         return render_template("Sing_Up.html")
     
     @app.route("/login")
-    def Login():
+    def login():
         return render_template("Login.html")
+    
+    @app.route("/loginsuccesful", methods=['GET', 'POST'])
+    def submit_login():
+        #if Backend determines it can login <--------------------------------------------------------------------Important
+        if request.method == 'POST':
+            username = request.form['Username']
+            password = hash = hashlib.blake2b(request.form['Password'].encode()).hexdigest()
+        return render_template("Succesful.html", LogorSing = 'Login')
+    
+    @app.route("/Singsuccesful", methods=['GET', 'POST'])
+    def submit_sing():
+        #if Backend determines it can login <--------------------------------------------------------------------Important
+        if request.method == 'POST':
+            username = request.form['Username']
+            password = hash = hashlib.blake2b(request.form['Password'].encode()).hexdigest()
+        return render_template("Succesful.html", LogorSing = 'Sing Up')
