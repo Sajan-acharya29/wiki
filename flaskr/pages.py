@@ -11,7 +11,7 @@ def make_endpoints(app):
     def home():
         # TODO(Checkpoint Requirement 2 of 3): Change this to use render_template
         # to render main.html on the home page.
-        return render_template("main.html") #"Hello, World!\n"
+        return render_template("home.html") #"Hello, World!\n"
 
     # TODO(Project 1): Implement additional routes according to the project requirements.
 
@@ -36,5 +36,86 @@ def make_endpoints(app):
     
         return render_template("upload.html")  
     
-    
 
+    # this is just for the checking purpose.
+    @app.route('/signin', methods=['GET', 'POST'])
+    def signin():
+        if request.method == 'POST':
+            print("function calleeddd")
+            username = request.form['username']
+            password = request.form['password']
+            # with open("text_file.txt", "w") as file:
+            #     file.write(f'{username}, {password} this is the returned signin') 
+            if my_backend.sign_in(username, password):
+                return render_template("login_succesfull.html", sent_user_name = username)
+                # return render_template("login_succesfull.html")
+
+        return render_template("signin.html")
+
+
+    @app.route('/signup', methods=['GET', 'POST'])
+    def signup():
+        if request.method == 'POST':
+            print("function calleeddd")
+            username = request.form['username']
+            password = request.form['password']
+            # with open("text_file.txt", "w") as file:
+            #     file.write(f'{username}, {password} this is the returned register details') 
+            if my_backend.sign_up(username, password):
+                return render_template("login_succesfull.html")
+  
+        return render_template("signup.html")
+    
+    #this is camerons
+
+    @app.route('/about')
+    def about():
+        # first_image_bytes = my.get_image("cameron.jpeg")
+        # with Image.open(io.BytesIO(first_image_bytes)) as img:
+        #     img.save("downloaded_img_file.jpeg")
+        # saves the image file into the current directory.
+        return render_template("about.html")
+    
+    @app.route('/pages')
+    def pages():
+        return render_template("pages.html")
+    
+    @app.route('/Hillwood')
+    def hilwood():
+        return render_template("Hillwood.html")
+    
+    @app.route('/Basilica')
+    def basilica():
+        return render_template("Basilica.html")
+    
+    @app.route('/Albert')
+    def albert():
+        return render_template("Albert.html")
+
+    @app.route('/Anderson')
+    def anderson():
+        return render_template("Anderson.html")
+
+    @app.route('/Arboetum')
+    def arboetum():
+        return render_template("Arboetum.html")
+    
+    @app.route('/Dumbarton')
+    def dumbarton():
+        return render_template("Dumbarton.html")
+    
+    @app.route('/Lincoln')
+    def lincoln():
+        return render_template("Lincoln.html")
+    
+    @app.route('/Office')
+    def office():
+        return render_template("Office.html")
+    
+    @app.route('/Postal')
+    def postal():
+        return render_template("Postal.html")
+
+    @app.route('/Wilson')
+    def wilson():
+        return render_template("Wilson.html")

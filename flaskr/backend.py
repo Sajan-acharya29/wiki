@@ -43,6 +43,7 @@ class Backend:
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
 
+
     def sign_up(self, username, password):
         """
         Adds user data if it does not exist along with a hashed password.
@@ -108,9 +109,9 @@ my = Backend()
 
 
 #uploads file
-file = open("check_file.txt")
-my.upload("check_file.txt", file)
-print("completed upload")
+# file = open("check_file.txt")
+# my.upload("check_file.txt", file)
+# print("completed upload")
 
 # name = "sajan"
 # password = "test10"
@@ -130,8 +131,8 @@ print("completed upload")
 #returns False and error as user is not signed in succesfully
 
 
-# image_bytes = my.get_image("img1.jpeg")
+# image_bytes = my.get_image("img2.jpeg")
 # with Image.open(io.BytesIO(image_bytes)) as img:
 #     img.save("downloaded_img_file.jpeg")
-#saves the image file into the current directory.
+# saves the image file into the current directory.
 
