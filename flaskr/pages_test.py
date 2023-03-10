@@ -52,4 +52,10 @@ def test_upload(client):
     assert b'<input type=file name=file>' in resp.data
     assert b'<input type=submit value=Upload>' in resp.data
 
+def test_signout(client):
+    resp = client.get("/signout")
+    assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
+    assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
+    assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
+
 

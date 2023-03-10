@@ -52,6 +52,9 @@ def make_endpoints(app):
 
         return render_template("signin.html")
 
+    @app.route('/signout', methods=['GET', 'POST'])
+    def signout():
+        return redirect("/")
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
