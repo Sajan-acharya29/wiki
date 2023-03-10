@@ -48,19 +48,16 @@ class Backend:
         Adds user data if it does not exist along with a hashed password.
         returns True if the user was added successfully, False if the user already exists.
         """
-        account_created = False
         site_secret = "brainiacs_password"
         blob = self.user_bucket.blob(username)
         if blob.exists():
-            print("User already exists")  # User already exists
-            return account_created        #returns fals    
+            return False       #User already exists  so returns False
 
         password_with_salt = f"{username}{site_secret}{password}"
         hashed_password = hashlib.blake2b(password_with_salt.encode()).hexdigest()     #returns a str objects
         curr_user_details = username + ":" + hashed_password
         blob.upload_from_string(curr_user_details)
-        account_created = True
-        return account_created # User added successfully
+        return True # User added successfully
 
 
     def sign_in(self, username, password):
@@ -68,11 +65,9 @@ class Backend:
         Checks if a password, when hashed, matches the password in the user bucket.
         returns True if the password matches, False otherwise.
         """
-        login_succesfull = False
         blob = self.user_bucket.blob(username)
         if not blob.exists():
-            # print('User does not exist')  # User does not exist
-            return False
+            return False         #User does not exist
         curr_user_details = blob.download_as_text()        #downloads : "sajan:testpassword"
         stored_user_password = curr_user_details.split(":")[1]
         
@@ -80,9 +75,8 @@ class Backend:
         password_with_salt = f"{username}{site_secret}{password}"
         hashed_password = hashlib.blake2b(password_with_salt.encode()).hexdigest()  
         if hashed_password == stored_user_password:
-            login_succesfull = True
-            return login_succesfull
-        return False
+            return True                  #signed in successfully
+        return False            #wrong password
     
 
     def get_image(self, image_name):
