@@ -159,7 +159,7 @@ def test_sign_in_user_succesfully_signs_in(backend):
 
     backend.user_bucket.blob.return_value = curr_mock_blob
 
-    received_confirmation = backend.sign_in(username, password)
+    recieved_confirmation = backend.sign_in(username, password)
     assert recieved_confirmation == True
 
 
@@ -192,6 +192,8 @@ def test_sign_in_user_not_found(backend):
     backend.user_bucket.blob.return_value = curr_mock_blob
     recieved_confirmation = backend.sign_in(username, password)
     assert recieved_confirmation == False
+
+
 
 
 
