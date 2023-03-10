@@ -1,0 +1,46 @@
+{% extends "main.html" %}
+{% block content %}
+<body>
+
+<!-- Header -->
+<div class="w3-main" style="margin-left:250px">
+
+    <div class="w3-row w3-padding-64">
+      <div class="w3-twothird w3-container">
+        <h1 class="w3-text-teal">Basilica of the National Shrine of the Immaculate Conception</h1>
+        <p>The Basilica of the National Shrine of the Immaculate Conception is the largest Roman Catholic church in the United States and North America, and is one of the ten largest churches in the world.</p>
+      </div>
+      <div class="w3-third w3-container">
+        <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/22/ad/5a/9b/with-a-gross-floor-area.jpg?w=1000&h=800&s=1" alt="Test" width="350" height="300" class="w3-border w3-center">
+      </div>
+    </div>
+  <!-- END MAIN -->
+  </div>
+  
+  <script>
+  // Get the Sidebar
+  var mySidebar = document.getElementById("mySidebar");
+  
+  // Get the DIV with overlay effect
+  var overlayBg = document.getElementById("myOverlay");
+  
+  // Toggle between showing and hiding the sidebar, and add overlay effect
+  function w3_open() {
+    if (mySidebar.style.display === 'block') {
+      mySidebar.style.display = 'none';
+      overlayBg.style.display = "none";
+    } else {
+      mySidebar.style.display = 'block';
+      overlayBg.style.display = "block";
+    }
+  }
+  
+  // Close the sidebar with the close button
+  function w3_close() {
+    mySidebar.style.display = "none";
+    overlayBg.style.display = "none";
+  }
+  </script>
+</body>
+{% endblock %}
+
