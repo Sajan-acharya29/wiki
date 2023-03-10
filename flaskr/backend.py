@@ -28,7 +28,6 @@ class Backend:
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
 
-
     def get_all_page_names(self):
         """returns names of all wiki pages in the content bucket."""
         all_pages_list = []
@@ -59,7 +58,6 @@ class Backend:
         blob.upload_from_string(curr_user_details)
         return True # User added successfully
 
-
     def sign_in(self, username, password):
         """
         Checks if a password, when hashed, matches the password in the user bucket.
@@ -70,7 +68,7 @@ class Backend:
             return False         #User does not exist
         curr_user_details = blob.download_as_text()        #downloads : "sajan:testpassword"
         stored_user_password = curr_user_details.split(":")[1]
-        
+    
         site_secret = "brainiacs_password"
         password_with_salt = f"{username}{site_secret}{password}"
         hashed_password = hashlib.blake2b(password_with_salt.encode()).hexdigest()  
@@ -78,7 +76,6 @@ class Backend:
             return True                  #signed in successfully
         return False            #wrong password
     
-
     def get_image(self, image_name):
         """
         Gets an image from the image bucket.
@@ -96,10 +93,8 @@ class Backend:
 # get_page = my.get_wiki_page("greet.html")
 # print(get_page)
 
-
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)
-
 
 #uploads file
 # file = open("check_file.txt")
@@ -111,18 +106,15 @@ class Backend:
 # print(my.sign_up(name, password))
 # #added sajan.
 
-
 # name = "sajan"
 # password = "test10"
 # print(my.sign_in(name, password))
 # #returns true as user is signed in succesfully
 
-
 # name = "sajan"
 # password = "test1012"
 # print(my.sign_in(name, password))
 #returns False and error as user is not signed in succesfully
-
 
 # image_bytes = my.get_image("img1.jpeg")
 # with Image.open(io.BytesIO(image_bytes)) as img:
