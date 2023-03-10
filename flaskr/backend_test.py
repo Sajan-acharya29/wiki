@@ -185,6 +185,7 @@ def test_sign_in_user_inputs_wrong_password(backend):
     assert recieved_confirmation == False
 
 def test_sign_in_user_not_found(backend):
+    """checks if the user is not present in the user bucket and returns false"""
     username = "midnight_user"
     password = "testing_password_sajan"
     curr_mock_blob = MagicMock()
@@ -192,10 +193,6 @@ def test_sign_in_user_not_found(backend):
     backend.user_bucket.blob.return_value = curr_mock_blob
     recieved_confirmation = backend.sign_in(username, password)
     assert recieved_confirmation == False
-
-
-
-
 
 
 
