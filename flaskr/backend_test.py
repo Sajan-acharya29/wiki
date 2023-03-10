@@ -85,7 +85,6 @@ def test_get_all_page_names_if_no_pages_found(backend):
     blob2 = MagicMock()
     blob2.name = "test_page2"
     backend.content_bucket.list_blobs.return_value = [blob1, blob2]
-    
     expected_page_list = []
     recieved_list = backend.get_all_page_names()
     assert recieved_list == expected_page_list
@@ -93,52 +92,38 @@ def test_get_all_page_names_if_no_pages_found(backend):
 def test_upload_html_files(backend):
     """tests if the upload method works for the .html files"""
     mock_file_name = "mock_file.html"
-    curr_mock_file_content = "<html><head></head><body><This is testing content page</h1></body></html>"
-  
+    curr_mock_file_content = "<html><head></head><body><This is testing content page</h1></body></html>" 
     curr_mock_blob = MagicMock()
     backend.content_bucket.blob.return_value = curr_mock_blob
-
     backend.upload(mock_file_name, curr_mock_file_content)
-  
     curr_mock_blob = backend.content_bucket.blob(mock_file_name)  
     curr_mock_blob.download_as_text.return_value = curr_mock_file_content
-    curr_mock_blob.upload_from_file.assert_called_once_with(curr_mock_file_content)
 
+    curr_mock_blob.upload_from_file.assert_called_once_with(curr_mock_file_content)
     recieved_mock_content = curr_mock_blob.download_as_text() 
     assert recieved_mock_content == curr_mock_file_content
-
 
 def test_upload_txt_file(backend):
     """tests if the upload method works for the .txt files"""
     mock_file_name = "mock_text_file.txt"
     curr_mock_file_content = "This is testing file for a txt file"
-  
     curr_mock_blob = MagicMock()
     backend.content_bucket.blob.return_value = curr_mock_blob
-  
-     # Call the upload method with the mock file
     backend.upload(mock_file_name, curr_mock_file_content)
-  
     curr_mock_blob = backend.content_bucket.blob(mock_file_name)
-    
     curr_mock_blob.download_as_text.return_value = curr_mock_file_content
+
     curr_mock_blob.upload_from_file.assert_called_once_with(curr_mock_file_content)
-
     recieved_mock_content = curr_mock_blob.download_as_text() 
-
     assert recieved_mock_content == curr_mock_file_content
 
 def test_upload_img_files(backend):
     """tests if the upload method works for the image files"""
     curr_mock_file_name = "mock_img_file.jpeg"
-
     curr_mock_file_content = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00'  
-
     curr_mock_blob = MagicMock()
     backend.content_bucket.blob.return_value = curr_mock_blob
-
     backend.upload(curr_mock_file_name, curr_mock_file_content)
-
     curr_mock_blob = backend.content_bucket.blob(curr_mock_file_name)
     curr_mock_blob.download_as_bytes.return_value = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00'
     
