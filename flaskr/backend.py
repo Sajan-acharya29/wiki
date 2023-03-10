@@ -71,8 +71,8 @@ class Backend:
         login_succesfull = False
         blob = self.user_bucket.blob(username)
         if not blob.exists():
-            return 'User does not exist'  # User does not exist
-        
+            print('User does not exist')  # User does not exist
+            return False
         curr_user_details = blob.download_as_text()        #downloads : "sajan:testpassword"
         stored_user_password = curr_user_details.split(":")[1]
         
@@ -98,7 +98,7 @@ class Backend:
         return image_bytes
 
 
-my = Backend()
+# my = Backend()
 # get_page = my.get_wiki_page("greet.html")
 # print(get_page)
 
@@ -108,9 +108,9 @@ my = Backend()
 
 
 #uploads file
-file = open("check_file.txt")
-my.upload("check_file.txt", file)
-print("completed upload")
+# file = open("check_file.txt")
+# my.upload("check_file.txt", file)
+# print("completed upload")
 
 # name = "sajan"
 # password = "test10"
