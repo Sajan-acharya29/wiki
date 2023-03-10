@@ -71,7 +71,7 @@ class Backend:
         login_succesfull = False
         blob = self.user_bucket.blob(username)
         if not blob.exists():
-            print('User does not exist')  # User does not exist
+            # print('User does not exist')  # User does not exist
             return False
         curr_user_details = blob.download_as_text()        #downloads : "sajan:testpassword"
         stored_user_password = curr_user_details.split(":")[1]
