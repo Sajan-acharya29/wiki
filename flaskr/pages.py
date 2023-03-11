@@ -52,7 +52,7 @@ def make_endpoints(app):
 
         return render_template("signin.html")
 
-    @app.route('/signout', methods=['GET', 'POST'])
+    @app.route('/logout', methods=['GET', 'POST'])
     def signout():
         return redirect("/")
 
