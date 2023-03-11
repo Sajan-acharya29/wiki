@@ -12,7 +12,11 @@ def make_endpoints(app):
     def home():
         # TODO(Checkpoint Requirement 2 of 3): Change this to use render_template
         # to render main.html on the home page.
-        return render_template("home.html") #"Hello, World!\n"
+
+        #return render_template("home.html")
+        greetings = "Welcome To Brainiacs" 
+        return render_template("main.html", greetings = greetings) 
+    
 
     # TODO(Project 1): Implement additional routes according to the project requirements.
 
@@ -45,13 +49,12 @@ def make_endpoints(app):
             print("function calleeddd")
             username = request.form['username']
             password = request.form['password']
-            # with open("text_file.txt", "w") as file:
-            #     file.write(f'{username}, {password} this is the returned signin') 
+          
             if my_backend.sign_in(username, password):
-                return render_template("login_succesfull.html", sent_user_name = username)
-                # return render_template("login_succesfull.html")
+                return render_template("main.html", sent_user_name = username, signed_in = True)
 
         return render_template("signin.html")
+
 
 
     @app.route('/signup', methods=['GET', 'POST'])
@@ -77,50 +80,21 @@ def make_endpoints(app):
         # saves the image file into the current directory.
         return render_template("about.html")
     
-    @app.route('/pages/<page>')
-    def user_pages(page):
-        return render_template(my_backend.get_wiki_page(page))
-    
+    @app.route('/pages/<page_name>')
+    def page(page_name):
+        final_page_name = page_name + ".txt"
+        curr_page_content = my_backend.get_wiki_page(final_page_name)
+        print(curr_page_content, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        return render_template("wiki_page.html", page_name = final_page_name, page_content = curr_page_content)
+
     @app.route('/pages')
     def pages():
-        return render_template("pages.html")
-    
-    @app.route('/Hillwood')
-    def hilwood():
-        return render_template("Hillwood.html")
-    
-    @app.route('/Basilica')
-    def basilica():
-        return render_template("Basilica.html")
-    
-    @app.route('/Albert')
-    def albert():
-        return render_template("Albert.html")
+        """gets the page names from bucket and passes it to """
+        all_page_names = my_backend.get_all_page_names()
+        return render_template("pages.html",all_page_names = all_page_names)
 
-    @app.route('/Anderson')
-    def anderson():
-        return render_template("Anderson.html")
 
-    @app.route('/Arboetum')
-    def arboetum():
-        return render_template("Arboetum.html")
+    @app.route('/logout', methods=['GET', 'POST'])
+    def logout():
+        return redirect("/")
     
-    @app.route('/Dumbarton')
-    def dumbarton():
-        return render_template("Dumbarton.html")
-    
-    @app.route('/Lincoln')
-    def lincoln():
-        return render_template("Lincoln.html")
-    
-    @app.route('/Office')
-    def office():
-        return render_template("Office.html")
-    
-    @app.route('/Postal')
-    def postal():
-        return render_template("Postal.html")
-
-    @app.route('/Wilson')
-    def wilson():
-        return render_template("Wilson.html")
