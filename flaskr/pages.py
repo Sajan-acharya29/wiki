@@ -18,28 +18,48 @@ def make_endpoints(app):
         return render_template("main.html", greetings = greetings) 
     
 
+    # @app.route('/about')
+    # def about():
+    #     # first_image_bytes = my.get_image("cameron.jpeg")
+    #     # with Image.open(io.BytesIO(first_image_bytes)) as img:
+    #     #     img.save("downloaded_img_file.jpeg")
+    #     # saves the image file into the current directory.
+    #     return render_template("about.html")
+
     # TODO(Project 1): Implement additional routes according to the project requirements.
-
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'}
-
-    def allowed_file(filename):
-        return '.' in filename and \
-             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
+        """checks the extension and uploads valid files to the content bucket"""
+  
+        ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'}
+
+        def allowed_file(filename):
+            return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
+                 
         if request.method == 'POST':
             if 'file' not in request.files:
                 flash('No file part')
-                return redirect(request.url)
+                return render_template('upload.html', message = "No file part")
+
             file = request.files['file']
             if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
+                flash('No file selected')
+                return render_template('upload.html', message = "No file selected")
+
             if file and allowed_file(file.filename):
                 my_backend.upload(f'{file.filename}',file) 
-    
+                return render_template('upload.html', message = "file sucessfully uploaded")
+            else:
+                return render_template('upload.html', message = "wrong format file")
         return render_template("upload.html")  
+
+
+        
+
+
+
+
     
 
     # this is just for the checking purpose.
@@ -52,7 +72,6 @@ def make_endpoints(app):
           
             if my_backend.sign_in(username, password):
                 return render_template("main.html", sent_user_name = username, signed_in = True)
-
         return render_template("signin.html")
 
 
