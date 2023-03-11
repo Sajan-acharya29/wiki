@@ -28,13 +28,21 @@ class Backend:
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
 
+    # def get_all_page_names(self):
+    #     """returns names of all wiki pages or txt files user upload in the content bucket."""
+    #     all_pages_list = []
+    #     blobs = self.content_bucket.list_blobs(prefix="") 
+    #     for  blob in blobs:
+    #         if blob.name.endswith(".txt"):
+    #             all_pages_list.append(blob.name)
+    #     return all_pages_list
     def get_all_page_names(self):
-        """returns names of all wiki pages in the content bucket."""
+        """returns names of all wiki pages or txt files user upload in the content bucket."""
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="") 
         for  blob in blobs:
-            if blob.name.endswith(".html"):
-                curr_page_name = blob.name.split("/")[-1]
+            if blob.name.endswith(".txt"):
+                curr_page_name = blob.name[:len(blob.name)-4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
     
@@ -89,12 +97,15 @@ class Backend:
         return image_bytes
 
 
-# my = Backend()
-# get_page = my.get_wiki_page("greet.html")
-# print(get_page)
+my = Backend()
 
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)
+# get_page = my.get_wiki_page(get_page_names[0])
+# print(get_page)
+
+# get_page = my.get_wiki_page("greet.html")
+# print(get_page)
 
 #uploads file
 # file = open("check_file.txt")
