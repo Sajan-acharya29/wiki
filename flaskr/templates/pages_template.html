@@ -7,12 +7,11 @@
 
     <div class="w3-row w3-padding-64">
       <div class="w3-twothird w3-container">
-        <h1 class="w3-text-teal">Pages on our Wiki</h1>
-        <ol>
-            {% for curr_page in all_page_names %}
-                <li><a href= {{url_for("page", page_name = curr_page)}} > {{ curr_page }}</a></li>
-            {% endfor %}
-        </ol>
+        <h1 class="w3-text-teal">{{page_name}}</h1>
+        <p>The memorial to Albert Einstein, situated in an elm and holly grove in the southwest corner of the Academy grounds, was unveiled at the Academy's annual meeting, April 22, 1979, in honor of the centennial of the great scientist's birth. Einstein is depicted seated on a three-step bench of Mount Airy (North Carolina) white granite.</p>
+      </div>
+      <div class="w3-third w3-container">
+        <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/ad/56/99/dsc-0336-largejpg.jpg?w=1000&h=800&s=1" alt="Test" width="350" height="300" class="w3-border w3-center">
       </div>
     </div>
   <!-- END MAIN -->
@@ -43,6 +42,5 @@
   }
   </script>
 </body>
-
 {% endblock %}
 

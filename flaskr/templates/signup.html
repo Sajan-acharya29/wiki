@@ -1,0 +1,28 @@
+{% extends 'main.html' %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <head>
+        <title>Team Brainiacs</title>
+    </head>
+</head>
+{% block content %}
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <!-- Change heading -->
+    <h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>
+    <main>
+        <form method="post" enctype="multipart/form-data" id="register-form">
+
+            <input type="text" id="Username" name="username" placeholder="Username" required>
+            <input type="password" id="Password" name="password" placeholder="Password" required>
+            <input type="submit" value="Register" id="register-form-submit">
+        </form>
+    </main>
+{% endblock content %}
+
+

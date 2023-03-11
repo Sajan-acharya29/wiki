@@ -41,7 +41,7 @@ class Backend:
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="") 
         for  blob in blobs:
-            if blob.name.endswith(".txt"):
+            if blob.name.endswith(".txt"): 
                 curr_page_name = blob.name[:len(blob.name)-4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
@@ -49,6 +49,7 @@ class Backend:
     def upload(self, file_name, content):
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
+
 
     def sign_up(self, username, password):
         """
@@ -127,8 +128,8 @@ my = Backend()
 # print(my.sign_in(name, password))
 #returns False and error as user is not signed in succesfully
 
-# image_bytes = my.get_image("img1.jpeg")
+# image_bytes = my.get_image("img2.jpeg")
 # with Image.open(io.BytesIO(image_bytes)) as img:
 #     img.save("downloaded_img_file.jpeg")
-#saves the image file into the current directory.
+# saves the image file into the current directory.
 

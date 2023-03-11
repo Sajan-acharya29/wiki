@@ -1,17 +1,69 @@
 {% extends "main.html" %}
-
-{% block page_name %}
-About This Wiki
-{% endblock %}
-
 {% block content %}
-<h3>About this Wiki</h3>
+<body>
 
-<!-- TODO(Project 1): Add info about the wiki. -->
+<!-- Header -->
+<div class="w3-main" style="margin-left:250px">
 
-<h3>Your Authors</h3>
-
-<!-- TODO(Project 1): Add team members and pictures to about page. -->
+    <div class="w3-row w3-padding-64">
+      <div class="w3-twothird w3-container">
+        <h1 class="w3-text-teal">Sajan Ar</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
+          dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+      <div class="w3-third w3-container">
+        <img src="https://cdn.discordapp.com/attachments/1076232707652206772/1081955756577927209/img1.jpg" alt="Test" width="350" height="300" class="w3-border w3-center">
+      </div>
+    </div>
+  
+    <div class="w3-row">
+      <div class="w3-twothird w3-container">
+        <h1 class="w3-text-teal">Eliel</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
+          dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+      <div class="w3-third w3-container">
+        <img src="https://cdn.discordapp.com/attachments/1079200030440833175/1083448363917266974/584A0C35-F8E5-4AC0-AE34-C6C932ED064F.jpg" alt="Test" width="350" height="300" class="w3-border w3-center">
+      </div>
+    </div>
+  
+    <div class="w3-row w3-padding-64">
+      <div class="w3-twothird w3-container">
+        <h1 class="w3-text-teal">Cameron Briggs</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum
+          dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+      <div class="w3-third w3-container">
+      </div>
+    </div>
+  <!-- END MAIN -->
+  </div>
+  
+  <script>
+  // Get the Sidebar
+  var mySidebar = document.getElementById("mySidebar");
+  
+  // Get the DIV with overlay effect
+  var overlayBg = document.getElementById("myOverlay");
+  
+  // Toggle between showing and hiding the sidebar, and add overlay effect
+  function w3_open() {
+    if (mySidebar.style.display === 'block') {
+      mySidebar.style.display = 'none';
+      overlayBg.style.display = "none";
+    } else {
+      mySidebar.style.display = 'block';
+      overlayBg.style.display = "block";
+    }
+  }
+  
+  // Close the sidebar with the close button
+  function w3_close() {
+    mySidebar.style.display = "none";
+    overlayBg.style.display = "none";
+  }
+  </script>
+</body>
 
 {% endblock %}
 
