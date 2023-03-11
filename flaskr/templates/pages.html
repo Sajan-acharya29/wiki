@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+
+{% block page_name %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <title>All pages </title>
+        {% for curr_page in all_page_names %}
+            <li> <a href= {{url_for("pages", page_name = curr_page)}} > {{ curr_page }}</a></li>
+        {% endfor %}
+
+    </ol>
+{% endblock page_name %}  
+
