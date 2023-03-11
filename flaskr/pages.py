@@ -1,7 +1,6 @@
 from flask import Flask, flash, request, redirect, url_for, render_template
 from flaskr.backend import Backend
 
-
 def make_endpoints(app):
 
     
@@ -73,8 +72,6 @@ def make_endpoints(app):
             if my_backend.sign_in(username, password):
                 return render_template("main.html", sent_user_name = username, signed_in = True)
         return render_template("signin.html")
-
-
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
