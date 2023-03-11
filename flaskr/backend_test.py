@@ -13,9 +13,10 @@ def backend():
     return backend
 
 def test_get_wiki_page_if_page_found(backend):
-    """Checks if the get_wiki_page method returns correct text for an existing specified page"""
-    mock_page_name = "testing_page.html"
-    mock_page_content = "<html><body>this is a test content</body></html>"
+    """Checks if the get_wiki_page method returns correct text for an existing specified txt file"""
+
+    mock_page_name = "testing_page.txt"
+    mock_page_content = "this is a test content"
     
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
@@ -29,8 +30,8 @@ def test_get_wiki_page_if_page_found(backend):
 
   
 def test_get_wiki_page_if_page_not_found(backend):
-    """Checks if the get_wiki_page method returns error for a page not present in the bucket"""
-    unavilable_page = "page_not_found.html"   
+    """Checks if the get_wiki_page method returns error for a specific txt file not present in the bucket"""
+    unavilable_page = "page_not_found.txt"   
 
     mock_blob = MagicMock()
     mock_blob.exists.return_value = False
@@ -44,41 +45,41 @@ def test_get_wiki_page_if_page_not_found(backend):
 def test_get_all_page_names(backend):
     """ checks if the get_all_page_names method returns the list of the names in the content bucket"""
     blob1 = MagicMock()
-    blob1.name = "test_page1.html"
+    blob1.name = "test_page1.txt"
 
     blob2 = MagicMock()
-    blob2.name = "test_page2.html"
+    blob2.name = "test_page2.txt"
     backend.content_bucket.list_blobs.return_value = [blob1, blob2]
     
-    expected_page_list = ['test_page1.html', 'test_page2.html']
+    expected_page_list = ['test_page1', 'test_page2']
     recieved_list = backend.get_all_page_names()
     assert recieved_list == expected_page_list
 
 def test_get_all_page_names_excluding_invalid_page_extension(backend):
-    """ checks if get_all_page_names ignores other file that does not end with .html"""
+    """ checks if get_all_page_names ignores other file that does not end with .txt"""
     blob1 = MagicMock()
-    blob1.name = "Pages/test_page1.html"
+    blob1.name = "test_page1.txt"
 
     blob2 = MagicMock()
-    blob2.name = "Pages/test_page2.html"
+    blob2.name = "test_page2.txt"
 
     blob3 = MagicMock()
-    blob3.name = "Pages/test_page3.txt"
+    blob3.name = "test_page3.html"
 
     blob4 = MagicMock()
-    blob4.name = "Pages/test_page_img.jpeg"
+    blob4.name = "test_page_img.jpeg"
 
     blob5 = MagicMock()
-    blob5.name = "Pages/test_page5.html"
+    blob5.name = "test_page5.txt"
 
     backend.content_bucket.list_blobs.return_value = [blob1, blob2, blob3, blob4, blob5]
     
-    expected_page_list = ['test_page1.html', 'test_page2.html', 'test_page5.html']
+    expected_page_list = ['test_page1', 'test_page2', 'test_page5']
     recieved_list = backend.get_all_page_names()
     assert recieved_list == expected_page_list
 
 def test_get_all_page_names_if_no_pages_found(backend):
-    """ checks if the get_all_page_names method returns empty list if no pages with extension .html or .html are found in the content bucket"""
+    """ checks if the get_all_page_names method returns empty list if no pages with extension .txt are found in the content bucket"""
     blob1 = MagicMock()
     blob1.name = "test_page1"
 
