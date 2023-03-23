@@ -94,7 +94,7 @@ def test_upload_route_no_file_content(client):
 
 def test_upload_route_wrong_extension(client):
     """tests if the upload route returns wrong format file error if file is of invalid extension"""
-    with patch("flaskr.backend.Backend.upload", return_value = None):
+    with patch("flaskr.backend.Backend.upload", return_value=None):
         my_file_name = "test_file.mp56"
         my_file = io.BytesIO(b"this is a test file")
         
