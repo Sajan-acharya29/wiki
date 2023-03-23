@@ -3,7 +3,8 @@ from unittest.mock import patch
 import io
 import pytest
 
-# See https://flask.palletsprojects.com/en/2.2.x/testing/ 
+
+# See https://flask.palletsprojects.com/en/2.2.x/testing/
 # for more info on testing
 @pytest.fixture
 def app():
@@ -12,9 +13,11 @@ def app():
     })
     return app
 
+
 @pytest.fixture
 def client(app):
     return app.test_client()
+
 
 # TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
 # match the changes made in the other Checkpoint Requirements.
@@ -22,6 +25,7 @@ def test_home_page(client):
     resp = client.get("/")
     assert resp.status_code == 200
     # assert b"Ecom\n" in resp.data
+
 
 # TODO(Project 1): Write tests for other routes.
 #assert resp.data == b"<h1>hello world></h1>"
@@ -35,6 +39,7 @@ def test_signup(client):
     assert b'<input type="submit" value="Register" id="register-form-submit">' in resp.data
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign In</h1>' not in resp.data
 
+
 def test_signin(client):
     resp = client.get("/signin")
     assert resp.status_code == 200
@@ -45,6 +50,7 @@ def test_signin(client):
     assert b'<input type="submit" value="Login" id="login-form-submit">' in resp.data
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>' not in resp.data
 
+
 def test_upload(client):
     resp = client.get("/upload")
     assert resp.status_code == 200
@@ -53,19 +59,25 @@ def test_upload(client):
     assert b'<input type=file name=file>' in resp.data
     assert b'<input type=submit value=Upload>' in resp.data
 
+
 def test_signout(client):
     resp = client.get("/logout")
     assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
+
+
 def test_upload_route_successful(client):
     """ tests if the upload route is sucessfully uploading the file"""
-    with patch("flaskr.backend.Backend.upload", return_value = None):
+    with patch("flaskr.backend.Backend.upload", return_value=None):
         my_file_name = "test_file.txt"
         my_file = io.BytesIO(b"this is a test file")
-        
-        upload_data = {'filename': my_file_name, 'file':(my_file, my_file_name)}
-    response = client.post("/upload", data = upload_data)
+
+        upload_data = {
+            'filename': my_file_name,
+            'file': (my_file, my_file_name)
+        }
+    response = client.post("/upload", data=upload_data)
     assert response.status_code == 200
     assert b'file sucessfully uploaded' in response.data
 
@@ -73,33 +85,41 @@ def test_upload_route_successful(client):
 def test_upload_route_empty_file_name(client):
     """tests if the upload route gives redirects to request url if no file selected"""
 
-    with patch("flaskr.backend.Backend.upload", return_value = None):
+    with patch("flaskr.backend.Backend.upload", return_value=None):
         my_file_name = ""
         my_file_content = io.BytesIO(b"this is a test file")
-        
-        upload_data = {'filename': my_file_name, 'file':(my_file_content, my_file_name)}
-    response = client.post("/upload", data = upload_data)
-    assert response.status_code == 200           
+
+        upload_data = {
+            'filename': my_file_name,
+            'file': (my_file_content, my_file_name)
+        }
+    response = client.post("/upload", data=upload_data)
+    assert response.status_code == 200
     assert b'No file selected' in response.data
-    
+
+
 def test_upload_route_no_file_content(client):
     """tests if the upload route gives redirects to request url if file is empty"""
-    with patch("flaskr.backend.Backend.upload", return_value = None):
+    with patch("flaskr.backend.Backend.upload", return_value=None):
         my_file_name = "test.txt"
-        
+
         upload_data = {'filename': my_file_name}
-    response = client.post("/upload", data = upload_data)
-    assert response.status_code == 200   
+    response = client.post("/upload", data=upload_data)
+    assert response.status_code == 200
     assert b'No file part' in response.data
+
 
 def test_upload_route_wrong_extension(client):
     """tests if the upload route returns wrong format file error if file is of invalid extension"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
         my_file_name = "test_file.mp56"
         my_file = io.BytesIO(b"this is a test file")
-        
-        upload_data = {'filename': my_file_name, 'file':(my_file, my_file_name)}
-    response = client.post("/upload", data = upload_data)
+
+        upload_data = {
+            'filename': my_file_name,
+            'file': (my_file, my_file_name)
+        }
+    response = client.post("/upload", data=upload_data)
     assert response.status_code == 200
     assert b'wrong format file' in response.data
 
@@ -110,6 +130,7 @@ def test_upload_route_get_method(client):
     assert response.status_code == 200
     assert b'Upload new File' in response.data
 
+
 def test_home_page(client):
     resp = client.get("/")
     assert resp.status_code == 200
@@ -118,6 +139,7 @@ def test_home_page(client):
     assert b'<li><a href="/about">About</a></li>' in resp.data
     assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
+
 
 # TODO(Project 1): Write tests for other routes.
 def test_about_page(client):
