@@ -11,7 +11,7 @@ unittest:
  stage: test
  script:
  - pip install -r requirements.txt
- - pytest -v
+ - pytest .
  only:
  - pushes
 
