@@ -1,7 +1,7 @@
 lint:
  stage: test
  script:
- - pip install yapf
+ - pip install yapf ==0.32.0
  - yapf --recursive . --diff --style google
  only:
  - pushes
@@ -11,7 +11,7 @@ unittest:
  stage: test
  script:
  - pip install -r requirements.txt
- - pytest -v
+ - pytest .
  only:
  - pushes
 
@@ -26,4 +26,4 @@ prod:
  script:
  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
- - gcloud --quiet --project $brainiacs1 app deploy 
+ - gcloud --quiet --project brainiacs1 app deploy 
