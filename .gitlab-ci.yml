@@ -1,7 +1,7 @@
 lint:
  stage: test
  script:
- - pip install yapf ==0.32.0
+ - pip install yapf==0.32.0
  - yapf --recursive . --diff --style google
  only:
  - pushes
