@@ -22,7 +22,7 @@
 
 <prod>:
  image: google/cloud-sdk:alpine
- stage: <deploy>
+ stage: deploy
  environment: Production
  only:
  - main
