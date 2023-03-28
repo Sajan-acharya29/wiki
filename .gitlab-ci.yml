@@ -1,4 +1,4 @@
-<lint>:
+lint:
  stage: test
  script:
  - pip install yapf
@@ -7,11 +7,8 @@
  - pushes
 
 
-<unittest>:
+unittest:
  stage: test
- needs: 
- - pipeline: test
-   job: lint
  script:
  - pip install -r requirements.txt
  - pytest -v
@@ -20,7 +17,7 @@
 
 
 
-<prod>:
+prod:
  image: google/cloud-sdk:alpine
  stage: deploy
  environment: Production
