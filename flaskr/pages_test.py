@@ -91,22 +91,6 @@ def test_upload_route_successful(client):
 
 
 
-# def test_upload_route_empty_file_name(client):
-#     """tests if the upload route gives redirects to request url if no file selected"""
-
-#     with patch("flaskr.backend.Backend.upload", return_value=None):
-#         my_file_name = ""
-#         my_file_content = io.BytesIO(b"this is a test file")
-
-#         upload_data = {
-#             'filename': my_file_name,
-#             'file': (my_file_content, my_file_name)
-#         }
-#     response = client.post("/upload", data=upload_data)
-#     assert response.status_code == 200
-#     assert b'No file selected' in response.data
-
-
 def test_upload_route_no_file_content(client):
     """tests if the upload route gives redirects to request url if file is empty"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
