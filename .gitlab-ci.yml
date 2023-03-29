@@ -15,8 +15,6 @@ unittest:
  only:
  - pushes
 
-
-
 prod:
  image: google/cloud-sdk:alpine
  stage: deploy

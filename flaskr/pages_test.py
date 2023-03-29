@@ -2,6 +2,7 @@ from flaskr import create_app
 from unittest.mock import patch
 import io
 import pytest
+from werkzeug.datastructures import FileStorage
 
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/
@@ -67,19 +68,27 @@ def test_signout(client):
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
 
 
+
 def test_upload_route_successful(client):
     """ tests if the upload route is sucessfully uploading the file"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
-        my_file_name = "test_file.txt"
-        my_file = io.BytesIO(b"this is a test file")
+        with patch("flaskr.backend.Backend.get_wiki_page", return_value=b"this is a test file content"):
 
-        upload_data = {
-            'filename': my_file_name,
-            'file': (my_file, my_file_name)
-        }
-    response = client.post("/upload", data=upload_data)
-    assert response.status_code == 200
-    assert b'file sucessfully uploaded' in response.data
+            my_file_name = "test_file.txt"
+            my_file_content = b"this is a test file content"
+            response = client.post("/upload", data={
+                                                    "filename": my_file_name,
+                                                    "content": 
+                                                             FileStorage(filename="test_file.txt",
+                                                                         stream= my_file_content)
+                                                    }
+                                    )
+            assert response.status_code == 200
+            pages_resp = client.get("/pages/test_file.txt")
+            assert pages_resp.status_code == 200
+            assert b"test_file.txt" in pages_resp.data
+            assert b"this is a test file content" in pages_resp.data
+
 
 
 def test_upload_route_empty_file_name(client):
