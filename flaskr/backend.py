@@ -25,7 +25,20 @@ class Backend:
         specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text()
+
+        """Get only the text description of the place"""
+        content = specified_page.download_as_text().split()
+        Description = ''
+        link = ''
+        track = 0
+        for word in content:
+            if word == "Link:":
+                link = content[track+1]
+                break
+            Description += ' ' + word
+            track += 1
+
+        return ("".join(Description), link)
 
     # def get_all_page_names(self):
     #     """returns names of all wiki pages or txt files user upload in the content bucket."""

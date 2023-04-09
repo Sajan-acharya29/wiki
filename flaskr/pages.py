@@ -103,7 +103,7 @@ def make_endpoints(app):
               "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         return render_template("wiki_page.html",
                                page_name=final_page_name,
-                               page_content=curr_page_content)
+                               page_content=curr_page_content[0], page_link =curr_page_content[1])
 
     @app.route('/pages')
     def pages():
