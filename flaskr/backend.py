@@ -97,9 +97,48 @@ class Backend:
         image_bytes = blob.download_as_bytes()
         return image_bytes
 
+    """ Below methods for uploading and getting reviews"""
 
-my = Backend()
+    def upload_reviews(self, page_name, curr_user_review, username):
+        unique_review_connector = "^&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%^"         #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"{page_name}.txt"        
+        blob = self.content_bucket.blob(review_txt_file)
+        if blob.exists():
+          review_text = blob.download_as_text()
+          old_reviews_list = review_text.split(unique_review_connector)
+        else:
+          old_reviews_list = []
+        fresh_review = f"{username}: {curr_user_review}"
+        old_reviews_list.append(fresh_review)
+        updated_review_data = unique_review_connector.join(old_reviews_list)   #adds the fresh review to the old list with the unique connecter string added to the end.
+        blob.upload_from_string(updated_review_data)
+    
+    def get_reviews(self, page_name):
+        unique_review_connector = "^&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%^"         #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"{page_name}.txt"
+        blob = self.content_bucket.blob(review_txt_file)
+        if blob.exists():
+          review_data = blob.download_as_text()
+          review_data_list = review_data.split(unique_review_connector)
+          return review_data_list        
+        else:
+          return []
 
+
+# my = Backend()
+
+##test for upload method.
+# user = "sajan"
+# page_name = "sajan_test_file"
+# review_text = "I liked the emoji at the end. So this means that you are doing your work"
+# # my.upload_reviews(page_name, review_text, user)
+# print("succesfully worked")
+
+
+# curr_review = my.get_reviews(page_name)
+# print(curr_review)
+
+##test for older methods
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)
 # get_page = my.get_wiki_page(get_page_names[0])
