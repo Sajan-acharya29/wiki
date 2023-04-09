@@ -259,3 +259,8 @@ def test_get_image_if_image_not_found(backend):
     backend.content_bucket.blob.assert_called_once_with(image_name)
     expected_image_error = f"Error: Image {image_name} does not exists in the bucket."
     assert received_image_error == expected_image_error
+
+
+
+#for review sections tests
+def test_

@@ -101,8 +101,8 @@ class Backend:
     """ Below methods for uploading and getting reviews"""
 
     def upload_reviews(self, page_name, curr_user_review, username):
-        unique_review_connector = "^&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%^"         #this becomes the connector of the review. so we can seperate reviews based on this.
-        review_txt_file = f"{page_name}.txt"        
+        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"{page_name}_review.txt"        
         blob = self.content_bucket.blob(review_txt_file)
         if blob.exists():
           review_text = blob.download_as_text()
@@ -115,8 +115,8 @@ class Backend:
         blob.upload_from_string(updated_review_data)
     
     def get_reviews(self, page_name):
-        unique_review_connector = "^&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%^"         #this becomes the connector of the review. so we can seperate reviews based on this.
-        review_txt_file = f"{page_name}.txt"
+        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"{page_name}_review.txt"
         blob = self.content_bucket.blob(review_txt_file)
         if blob.exists():
           review_data = blob.download_as_text()
