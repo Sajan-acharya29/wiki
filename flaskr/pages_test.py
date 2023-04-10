@@ -113,6 +113,7 @@ def test_upload_route_no_file_content(client):
     assert response.status_code == 200
     assert b'No file part' in response.data
 
+
 def test_upload_route_wrong_extension(client):
     """tests if the upload route returns wrong format file error if file is of invalid extension"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
