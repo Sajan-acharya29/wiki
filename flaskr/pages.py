@@ -1,4 +1,4 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, session
 from flaskr.backend import Backend
 
 
@@ -29,14 +29,13 @@ def make_endpoints(app):
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         """checks the extension and uploads valid files to the content bucket"""
+        if session.get('loggedin', False) == False:
+            return redirect(url_for('home'))
 
-        ALLOWED_EXTENSIONS = {
-            'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'
-        }
+        ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'}
 
         def allowed_file(filename):
-            return '.' in filename and filename.rsplit(
-                '.', 1)[1].lower() in ALLOWED_EXTENSIONS
+            return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
         if request.method == 'POST':
             if 'file' not in request.files:
@@ -46,34 +45,41 @@ def make_endpoints(app):
             file = request.files['file']
             if file.filename == '':
                 flash('No file selected')
-                return render_template('upload.html',
-                                       message="No file selected")
+                return render_template('upload.html', message="No file selected")
 
             if file and allowed_file(file.filename):
                 my_backend.upload(f'{file.filename}', file)
-                return render_template('upload.html',
-                                       message="file sucessfully uploaded")
+                return render_template('upload.html',message="file sucessfully uploaded")
             else:
-                return render_template('upload.html',
-                                       message="wrong format file")
+                return render_template('upload.html',message="wrong format file")
         return render_template("upload.html")
 
     # this is just for the checking purpose.
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
+        if session.get('loggedin', False) == True:
+            return redirect(url_for('home'))
+        message = None
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']
             password = request.form['password']
-
-            if my_backend.sign_in(username, password):
+            if my_backend.sign_in(username, password):  # True if sign up is successful
+                session['loggedin'] = True
+                session['username'] = username
                 return render_template("main.html",
                                        sent_user_name=username,
                                        signed_in=True)
-        return render_template("signin.html")
+            else:
+                message = "Incorrect username or password"
+        return render_template("signin.html", message=message)
 
     @app.route('/signup', methods=['GET', 'POST'])
-    def signup():
+    def signup():  
+        if session.get('loggedin', False) == True:
+            return redirect(url_for('home'))
+
+        message = None  
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']
@@ -81,9 +87,12 @@ def make_endpoints(app):
             # with open("text_file.txt", "w") as file:
             #     file.write(f'{username}, {password} this is the returned register details')
             if my_backend.sign_up(username, password):
+                session['loggedin'] = True
+                session['username'] = username                
                 return render_template("login_succesfull.html")
-
-        return render_template("signup.html")
+            else:
+                message = "Username already present"
+        return render_template("signup.html", message = message)
 
     #this is camerons
 
@@ -93,17 +102,22 @@ def make_endpoints(app):
         # with Image.open(io.BytesIO(first_image_bytes)) as img:
         #     img.save("downloaded_img_file.jpeg")
         # saves the image file into the current directory.
+
+        
         return render_template("about.html")
 
-    @app.route('/pages/<page_name>')
+    @app.route('/pages/<page_name>', methods = ["GET", "POST"])
     def page(page_name):
+        #adding sessions to prevent from logging out without logout
+        # if "loggedin" not in session:
+        #     return redirect("/signin")
+        # else:         
+            # username = session.get("username")   
         final_page_name = page_name + ".txt"
         curr_page_content = my_backend.get_wiki_page(final_page_name)
-        print(curr_page_content,
-              "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         return render_template("wiki_page.html",
-                               page_name=final_page_name,
-                               page_content=curr_page_content)
+                            page_name=final_page_name,
+                            page_content=curr_page_content)
 
     @app.route('/pages')
     def pages():
@@ -113,4 +127,9 @@ def make_endpoints(app):
 
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
-        return redirect("/")
+        if session.get('loggedin', False) == False:
+            return redirect(url_for('home'))
+        
+        session.pop('loggedin', None)
+        session.pop('username', None)
+        return redirect(url_for("home"))
