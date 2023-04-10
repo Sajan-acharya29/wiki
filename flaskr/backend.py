@@ -112,9 +112,6 @@ class Backend:
         fresh_review = f"{username}: {curr_user_review}"
         old_reviews_list.append(fresh_review)
         updated_review_data = unique_review_connector.join(old_reviews_list)   #adds the fresh review to the old list with the unique connecter string added to the end.
-        print(old_reviews_list, 'this is old review')
-        print(updated_review_data, 'this is updated review')
-
         blob.upload_from_string(updated_review_data)
     
     def get_reviews(self, page_name):
@@ -127,7 +124,6 @@ class Backend:
           return review_data_list        
         else:
           return []
-
 
 # my = Backend()
 # #test for upload method.
