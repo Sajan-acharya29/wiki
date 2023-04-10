@@ -263,6 +263,7 @@ def test_get_image_if_image_not_found(backend):
 
 #test for cameron's r2 feature.
 def test_store_finances_answers_if_user_verified(backend):
+    """tests if the store finances method returns 'Successfully Uploaded' if the user has been verified"""
     mock_page_name = "test_page"
     mock_answer = "flight:200, housing: 300" 
     mock_verified = True
@@ -273,6 +274,7 @@ def test_store_finances_answers_if_user_verified(backend):
     assert result == "Successfully Uploaded"
 
 def test_store_finances_answers_if_user_not_verified(backend):
+    """tests if the store finances method returns 'Please log in' if the user has been verified"""
     mock_page_name = "test_page"
     mock_answer = "flight:200, housing: 300" 
     mock_verified = False
@@ -283,6 +285,7 @@ def test_store_finances_answers_if_user_not_verified(backend):
     assert result == "Please log in"
 
 def test_store_finances_answers_if_old_answers_not_present(backend):
+    """tests if the store finances method uploads the answers to new file finances_page_name if old answers are not present in the bucket"""
     mock_page_name = "test_page"
     mock_answer = "flight:200, housing: 300" 
     mock_verified = True
@@ -299,7 +302,8 @@ def test_store_finances_answers_if_old_answers_not_present(backend):
     returned_answers = curr_stored_reviews 
     assert expected_answers == returned_answers
 
-def test_upload_reviews_if_old_reviews_present(backend):
+def test_store_finances_answers_if_old_answers_present(backend):
+    """tests if the store finances method uploads the current answers to old file by combining the old answers with the current answer to the finances_pagename file"""
     mock_page_name = "test_page"
     mock_answer = "flight:200, housing: 300" 
     mock_verified = True
