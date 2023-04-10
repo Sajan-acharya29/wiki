@@ -31,6 +31,7 @@ def test_home_page(client):
 # TODO(Project 1): Write tests for other routes.
 #assert resp.data == b"<h1>hello world></h1>"
 def test_signup(client):
+    '''Test if sign up html elements are being displayed correctly'''
     resp = client.get("/signup")
     assert resp.status_code == 200
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>' in resp.data
@@ -42,6 +43,7 @@ def test_signup(client):
 
 
 def test_signin(client):
+    '''Test if sign in html elements are being displayed correctly'''
     resp = client.get("/signin")
     assert resp.status_code == 200
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign In</h1>' in resp.data
@@ -53,6 +55,7 @@ def test_signin(client):
 
 
 def test_upload(client):
+    '''Test if upload html elements are being displayed correctly'''
     resp = client.get("/upload")
     assert resp.status_code == 200
     assert b'<h1>Upload new File</h1>' in resp.data
@@ -62,6 +65,7 @@ def test_upload(client):
 
 
 def test_signout(client):
+    '''Test if user is logged out succesfully'''
     resp = client.get("/logout")
     assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
@@ -149,6 +153,16 @@ def test_home_page(client):
     assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
 
+def test_wiki_page_Google_Map(client):
+    '''Test if Google Map snapshot is being displayed'''
+    resp = client.get("/pages/dumbarton")
+    assert b'<iframe src=https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3104.430007084699!2d-77.06620158467243!3d38.914147979568156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7b63132dc7317%3A0xc226e57a90b4dbd7!2sDumbarton%20Oaks%20Museum!5e0!3m2!1sen!2sus!4v1681009088373!5m2!1sen!2sus id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' in resp.data
+
+def test_wiki_page_Google_Map_1(client):
+    '''Test if Google Map snapshot is not being displayed'''
+    resp = client.get("/pages/test")
+    assert b'<iframe src={{page_link}} id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' not in resp.data
+    
 
 # TODO(Project 1): Write tests for other routes.
 """this test is failing"""

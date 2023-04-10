@@ -95,17 +95,19 @@ def make_endpoints(app):
         # saves the image file into the current directory.
         return render_template("about.html")
 
-    @app.route('/pages/<page_name>')
+    @app.route('/pages/<page_name>', methods=['GET', 'POST'])
     def page(page_name):
         final_page_name = page_name + ".txt"
         curr_page_content = my_backend.get_wiki_page(final_page_name)
         print(curr_page_content,
               "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        
+        #changed parameters to get page content from tuple
         return render_template("wiki_page.html",
                                page_name=final_page_name,
                                page_content=curr_page_content[0], page_link =curr_page_content[1])
 
-    @app.route('/pages')
+    @app.route('/pages', methods=['GET', 'POST'])
     def pages():
         """gets the page names from bucket and passes it to """
         all_page_names = my_backend.get_all_page_names()

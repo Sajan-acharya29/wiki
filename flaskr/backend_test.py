@@ -31,6 +31,20 @@ def test_get_wiki_page_if_page_found(backend):
     assert recieved_text == curr_page_blob.download_as_text()
 
 
+def test_get_wiki_page(backend):
+    '''Check if the function get the text and the link in two separated variables in a tuple'''
+    # Set up mock objects
+    backend.content_bucket = MagicMock()
+    mock_blob = MagicMock()
+    backend.content_bucket.blob.return_value = mock_blob
+
+    # Set up mock blob to return test content
+    mock_page_name = "test_page.txt"
+    mock_page_content = "Test content Link: Testlink.com"
+    mock_blob.download_as_text.return_value = mock_page_content
+
+    assert backend.get_wiki_page(mock_page_name) == (" Test content", "Testlink.com")
+
 def test_get_wiki_page_if_page_not_found(backend):
     """Checks if the get_wiki_page method returns error for a specific txt file not present in the bucket"""
     unavilable_page = "page_not_found.txt"
