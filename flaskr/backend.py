@@ -35,8 +35,11 @@ class Backend:
         link = ''
         track = 0
         for word in content:
-            if word == "Link:":
-                link = content[track+1]
+            if word[0:5] == "Link:":
+                if len(word) > 5 and track+1 >= len(content):
+                    link = word[5:]
+                else:
+                    link = content[track+1]
                 break
             Description += ' ' + word
             track += 1
