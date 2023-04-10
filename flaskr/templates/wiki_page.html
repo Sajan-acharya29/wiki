@@ -18,8 +18,15 @@
         <form method="post">
             <div>
                 <label for="review">Write a Review:</label>
-                <textarea id="review" name="review"></textarea>
+                <textarea id="review" name="review">{{ review_text }}</textarea>
             </div>
+            {% with reviews = get_flashed_messages() %}
+            {% if reviews %}
+                <ul class="flashes">
+                    {{reviews[0]}}
+                </ul>
+            {% endif %}
+            {% endwith %}
             <input type="submit" value="Submit">
         </form>
     </div>
