@@ -40,7 +40,7 @@ class Backend:
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
-            if blob.name.endswith(".txt") and blob.name[0:7] != "review_":
+            if blob.name.endswith(".txt") and blob.name[0:7] != "review_":       #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
