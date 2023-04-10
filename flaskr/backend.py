@@ -107,11 +107,11 @@ class Backend:
         return specified_page.download_as_text().split()    #return a list of all the words. 
 
 
-# my = Backend()
-# pagename = 'test_file.txt'
-# result = my.identify_wiki_page_content(pagename)
-# print(result)
-#expected =  ['this', 'is', 'a', 'test', 'file']
+my = Backend()
+pagename = 'test_file.txt'
+result = my.identify_wiki_page_content(pagename)
+print(result)
+expected =  ['this', 'is', 'a', 'test', 'file']
 
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)
