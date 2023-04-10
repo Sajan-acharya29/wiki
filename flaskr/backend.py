@@ -17,20 +17,19 @@ class Backend:
         self.content_bucket = self.client.bucket(self.content_bucket_name)
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
-    def identify_wiki_page(self, page_name):
-        """
-        Gets the content of a wiki page from the content bucket with the specified name
-        returns Content of the wiki page, or None if the page does not exist.
-        """
-        specified_page = self.content_bucket.blob(page_name)
+    def identify_wiki_page_content(self, page_name): 
+        '''Gets the content of a wiki page from the content bucket 
+        with the specified name returns Content of the wiki page as a list of words'''
+        specified_page = self.content_bucket.blob(page_name)     
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
+        return specified_page.download_as_text().split()    #return a list of all the words. 
         
         return specified_page.download_as_text().split()
 
     def get_wiki_page(self, page_name):
-        """Get only the text description of the place"""
-        content = self.identify_wiki_page(page_name)
+        """Get the text description and link of the place in two separated variables and return it as a Tuple"""
+        content = self.identify_wiki_page_content(page_name)
         Description = ''
         link = ''
         track = 0
@@ -116,14 +115,6 @@ class Backend:
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
-
-    def identify_wiki_page_content(self, page_name): 
-        '''Gets the content of a wiki page from the content bucket 
-        with the specified name returns Content of the wiki page as a list of words'''
-        specified_page = self.content_bucket.blob(page_name)     
-        if not specified_page.exists():
-            return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text().split()    #return a list of all the words. 
 
 
 my = Backend()
