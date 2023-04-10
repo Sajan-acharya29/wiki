@@ -58,15 +58,17 @@ def make_endpoints(app):
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
         if session.get('loggedin', False) == True:
-            return redirect(url_for('home'))
+            return redirect(url_for('home'))  
         message = None
-        if request.method == 'POST':
-            print("function calleeddd")
+        if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
             username = request.form['username']
             password = request.form['password']
             if my_backend.sign_in(username, password):  # True if sign up is successful
                 session['loggedin'] = True
                 session['username'] = username
+                if "page_to_redirect" in session:
+                    redirect_page = session.pop("page_to_redirect")
+                    return redirect(redirect_page)   
                 return render_template("main.html",
                                        sent_user_name=username,
                                        signed_in=True)
@@ -111,6 +113,10 @@ def make_endpoints(app):
         #adding sessions to prevent from logging out without logout
         if request.method == "POST":
             if "loggedin" not in session:
+                if request.form.get("review") and not request.form.get("review").isspace():
+                    session["page_to_redirect"] = url_for('page', page_name=page_name)
+                    session["review_text"] = request.form.get("review")
+        
                 return redirect("/signin")
             else:         
                 review_data = request.form.get("review")
@@ -125,11 +131,15 @@ def make_endpoints(app):
             final_page_name = page_name + ".txt"
             curr_page_content = my_backend.get_wiki_page(final_page_name)
             stored_reviews = my_backend.get_reviews(page_name)
-
+            if "review_text" in session:
+                old_review_text = session.pop("review_text")
+            else:
+                old_review_text = ""
             return render_template("wiki_page.html",
                                 page_name=final_page_name,
                                 page_content=curr_page_content,
-                                reviews = stored_reviews)
+                                reviews = stored_reviews,
+                                review_text = old_review_text)
 
     @app.route('/pages')
     def pages():
