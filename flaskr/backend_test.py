@@ -273,3 +273,30 @@ def test_get_image_if_image_not_found(backend):
     backend.content_bucket.blob.assert_called_once_with(image_name)
     expected_image_error = f"Error: Image {image_name} does not exists in the bucket."
     assert received_image_error == expected_image_error
+
+#testing the identify wiki page content method
+def test_identify_wiki_page_content_if_page_found(backend):
+    """Checks if the identify_wiki_page_content method returns correct list of words for an existing specified txt file"""
+
+    mock_page_name = "testing_page.txt"
+    mock_page_content = "this is a test file"
+
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    backend.content_bucket.blob.return_value = mock_blob
+
+    curr_page_blob = backend.content_bucket.blob(mock_page_name)
+    curr_page_blob.upload_from_string(mock_page_content)
+    recieved_text = backend.identify_wiki_page_content(mock_page_name)
+    assert recieved_text == curr_page_blob.download_as_text().split()
+
+def test_identify_wiki_page_content_not_found(backend):
+    """Checks if the identify_wiki_page_content method returns error for a specific txt file not present in the bucket"""
+    unavilable_page = "page_not_found.txt"
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = False
+    backend.content_bucket.blob.return_value = mock_blob
+
+    expected_error = f"Erorr: The page {unavilable_page} does not exists in the bucket."
+    recieved_error = backend.identify_wiki_page_content(unavilable_page)
+    assert expected_error == recieved_error
