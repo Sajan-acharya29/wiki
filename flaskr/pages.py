@@ -103,21 +103,33 @@ def make_endpoints(app):
         #     img.save("downloaded_img_file.jpeg")
         # saves the image file into the current directory.
 
-        
+
         return render_template("about.html")
 
     @app.route('/pages/<page_name>', methods = ["GET", "POST"])
     def page(page_name):
         #adding sessions to prevent from logging out without logout
-        # if "loggedin" not in session:
-        #     return redirect("/signin")
-        # else:         
-            # username = session.get("username")   
-        final_page_name = page_name + ".txt"
-        curr_page_content = my_backend.get_wiki_page(final_page_name)
-        return render_template("wiki_page.html",
-                            page_name=final_page_name,
-                            page_content=curr_page_content)
+        if request.method == "POST":
+            if "loggedin" not in session:
+                return redirect("/signin")
+            else:         
+                review_data = request.form.get("review")
+                username = session.get("username")   
+                if review_data and not review_data.isspace():
+                    my_backend.upload_reviews(page_name, review_data, username)
+                else:                  
+                    flash(f'ERROR: Empty review.')
+                    return redirect(url_for('page', page_name=page_name))
+                return redirect(url_for('page', page_name=page_name))
+        else:
+            final_page_name = page_name + ".txt"
+            curr_page_content = my_backend.get_wiki_page(final_page_name)
+            stored_reviews = my_backend.get_reviews(page_name)
+
+            return render_template("wiki_page.html",
+                                page_name=final_page_name,
+                                page_content=curr_page_content,
+                                reviews = stored_reviews)
 
     @app.route('/pages')
     def pages():

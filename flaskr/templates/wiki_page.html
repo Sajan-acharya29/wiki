@@ -1,15 +1,26 @@
 {% extends "main.html" %}
 {% block content %}
-    
+
     <title>{{ page_name }}</title>
-    <br>
-    <br>
-    <br>
-    <br>
-   
-    <br>
     <br>
     <br>
      {{ page_content }}   
      <!-- we will get the content from the pages para route. -->
+
+    <div class="reviews_section">
+        <h2>Reviews:</h2>
+        {% for review in reviews %}
+            <div class="review">
+                <p>{{ review }}</p>
+            </div>
+        {% endfor %}
+        
+        <form method="post">
+            <div>
+                <label for="review">Write a Review:</label>
+                <textarea id="review" name="review"></textarea>
+            </div>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 {% endblock content %} 
