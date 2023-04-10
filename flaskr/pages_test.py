@@ -51,7 +51,6 @@ def test_signin(client):
     assert b'<input type="submit" value="Login" id="login-form-submit">' in resp.data
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>' not in resp.data
 
-
 def test_signout(client):
     resp = client.get("/logout")
     assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
@@ -131,7 +130,7 @@ def test_upload_route_wrong_extension(client):
 def test_upload_route_get_method(client):
     """tests the get method of the upload route"""
     with client.session_transaction() as session:
-            session['loggedin'] = True    
+            session['loggedin'] = True
     response = client.get("/upload")
     assert response.status_code == 200
     assert b'Upload new File' in response.data

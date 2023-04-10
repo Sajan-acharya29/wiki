@@ -117,7 +117,6 @@ def make_endpoints(app):
                 if request.form.get("review") and not request.form.get("review").isspace():
                     session["page_to_redirect"] = url_for('page', page_name=page_name)
                     session["review_text"] = request.form.get("review")
-        
                 return redirect("/signin")
             else:         
                 review_data = request.form.get("review")
