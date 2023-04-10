@@ -52,57 +52,52 @@ def test_signin(client):
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>' not in resp.data
 
 
-def test_upload(client):
-    resp = client.get("/upload")
-    assert resp.status_code == 200
-    assert b'<h1>Upload new File</h1>' in resp.data
-    assert b'<form method=post enctype=multipart/form-data>' in resp.data
-    assert b'<input type=file name=file>' in resp.data
-    assert b'<input type=submit value=Upload>' in resp.data
-
-
 def test_signout(client):
     resp = client.get("/logout")
     assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
 
+def test_upload_route_user_not_logged_in(client):
+    with patch("flaskr.backend.Backend.upload", return_value=None):
+        with client.session_transaction() as session:
+            session['loggedin'] = False
+        data = {'file': (io.BytesIO(b'this is a test file content'), 'test_file.txt'),
+                'filename': 'test_file.txt'}
+
+        response = client.post("/upload", data= data)
+        assert response.status_code == 302    #the upload route redirect to home if logged in 
 
 def test_upload_route_successful(client):
     """ tests if the upload route is sucessfully uploading the file"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
-        with patch("flaskr.backend.Backend.get_wiki_page",
-                   return_value=b"this is a test file content"):
+            with client.session_transaction() as session:
+                session['loggedin'] = True
 
-            my_file_name = "test_file.txt"
-            my_file_content = b"this is a test file content"
+            data = {'file': (io.BytesIO(b'this is a test file content'), 'test_file.txt'),
+                'filename': 'test_file.txt'}
+
             response = client.post("/upload",
-                                   data={
-                                       "filename":
-                                           my_file_name,
-                                       "content":
-                                           FileStorage(filename="test_file.txt",
-                                                       stream=my_file_content)
-                                   })
+                                data= data)
             assert response.status_code == 200
-            pages_resp = client.get("/pages/test_file.txt")
-            assert pages_resp.status_code == 200
-            assert b"test_file.txt" in pages_resp.data
-            assert b"this is a test file content" in pages_resp.data
+            print(response.data)
+            assert b'file sucessfully uploaded' in response.data
 
 
 def test_upload_route_empty_file_name(client):
     """tests if the upload route gives redirects to request url if no file selected"""
 
     with patch("flaskr.backend.Backend.upload", return_value=None):
+        with client.session_transaction() as session:
+            session['loggedin'] = True
+
         my_file_name = ""
         my_file_content = io.BytesIO(b"this is a test file")
 
-        upload_data = {
-            'filename': my_file_name,
-            'file': (my_file_content, my_file_name)
-        }
-    response = client.post("/upload", data=upload_data)
+        data = {'file': (my_file_content, my_file_name),
+                'filename': my_file_name}
+
+    response = client.post("/upload", data=data)
     assert response.status_code == 200
     assert b'No file selected' in response.data
 
@@ -110,31 +105,32 @@ def test_upload_route_empty_file_name(client):
 def test_upload_route_no_file_content(client):
     """tests if the upload route gives redirects to request url if file is empty"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
+        with client.session_transaction() as session:
+            session['loggedin'] = True
         my_file_name = "test.txt"
-
-        upload_data = {'filename': my_file_name}
-    response = client.post("/upload", data=upload_data)
+        data = {'filename': my_file_name}
+    response = client.post("/upload", data=data)
     assert response.status_code == 200
     assert b'No file part' in response.data
-
 
 def test_upload_route_wrong_extension(client):
     """tests if the upload route returns wrong format file error if file is of invalid extension"""
     with patch("flaskr.backend.Backend.upload", return_value=None):
+        with client.session_transaction() as session:
+            session['loggedin'] = True
         my_file_name = "test_file.mp56"
-        my_file = io.BytesIO(b"this is a test file")
-
-        upload_data = {
-            'filename': my_file_name,
-            'file': (my_file, my_file_name)
-        }
-    response = client.post("/upload", data=upload_data)
+        my_file_content = io.BytesIO(b"this is a test file")
+        data = {'file': (my_file_content, my_file_name),
+                'filename': my_file_name}
+    response = client.post("/upload", data=data)
     assert response.status_code == 200
     assert b'wrong format file' in response.data
 
 
 def test_upload_route_get_method(client):
     """tests the get method of the upload route"""
+    with client.session_transaction() as session:
+            session['loggedin'] = True    
     response = client.get("/upload")
     assert response.status_code == 200
     assert b'Upload new File' in response.data

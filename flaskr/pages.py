@@ -29,7 +29,7 @@ def make_endpoints(app):
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         """checks the extension and uploads valid files to the content bucket"""
-        if session.get('loggedin', False) == False:
+        if not session.get('loggedin', False):
             return redirect(url_for('home'))
 
         ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'}
@@ -49,6 +49,7 @@ def make_endpoints(app):
 
             if file and allowed_file(file.filename):
                 my_backend.upload(f'{file.filename}', file)
+                # flash("file sucessfully uploaded")
                 return render_template('upload.html',message="file sucessfully uploaded")
             else:
                 return render_template('upload.html',message="wrong format file")
