@@ -40,7 +40,7 @@ class Backend:
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
-            if blob.name.endswith(".txt"):
+            if blob.name.endswith(".txt") and blob.name[0:7] != "review_":
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
@@ -102,7 +102,7 @@ class Backend:
 
     def upload_reviews(self, page_name, curr_user_review, username):
         unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
-        review_txt_file = f"{page_name}_review.txt"        
+        review_txt_file = f"review_{page_name}.txt"        
         blob = self.content_bucket.blob(review_txt_file)
         if blob.exists():
           review_text = blob.download_as_text()
@@ -112,11 +112,14 @@ class Backend:
         fresh_review = f"{username}: {curr_user_review}"
         old_reviews_list.append(fresh_review)
         updated_review_data = unique_review_connector.join(old_reviews_list)   #adds the fresh review to the old list with the unique connecter string added to the end.
+        print(old_reviews_list, 'this is old review')
+        print(updated_review_data, 'this is updated review')
+
         blob.upload_from_string(updated_review_data)
     
     def get_reviews(self, page_name):
         unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
-        review_txt_file = f"{page_name}_review.txt"
+        review_txt_file = f"review_{page_name}.txt"
         blob = self.content_bucket.blob(review_txt_file)
         if blob.exists():
           review_data = blob.download_as_text()
@@ -127,13 +130,13 @@ class Backend:
 
 
 # my = Backend()
-
-##test for upload method.
+# #test for upload method.
 # user = "sajan"
-# page_name = "sajan_test_file"
+# page_name = "sajan_file_testing"
 # review_text = "I liked the emoji at the end. So this means that you are doing your work"
-# # my.upload_reviews(page_name, review_text, user)
+# my.upload_reviews(page_name, review_text, user)
 # print("succesfully worked")
+
 
 
 # curr_review = my.get_reviews(page_name)
