@@ -92,7 +92,7 @@ class Backend:
 
 
     #this is cameron's r2 implemented by sajan
-    def upload_finances_answers(self, page_name, answers, verified):
+    def store_finances_answers(self, page_name, answers, verified):
         """uploads the finance answers to bucket and return Successfully Uploaded if user has been verified else returns 'Please log in'"""
         if not verified:
             return "Please log in"
