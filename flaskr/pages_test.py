@@ -2,6 +2,7 @@ from flaskr import create_app
 from unittest.mock import patch
 import io
 import pytest
+from unittest.mock import MagicMock
 from werkzeug.datastructures import FileStorage
 
 
@@ -18,6 +19,7 @@ def app():
 @pytest.fixture
 def client(app):
     return app.test_client()
+
 
 
 # TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
@@ -135,6 +137,103 @@ def test_upload_route_get_method(client):
     assert response.status_code == 200
     assert b'Upload new File' in response.data
 
+def test_review_written_while_logged_in(client):
+    with patch("flaskr.backend.Backend.upload_reviews") as mock_upload:
+        mock_upload.return_value = None
+        mock_page_name = "test_page"
+        review = "I really like this place. It was really fun to visit it"
+        username = "sajan"
+        with client.session_transaction() as session:
+            session['loggedin'] = True
+            session['username'] = username
+        
+        response = client.post(f"/pages/{mock_page_name}", data={"review": review})
+        mock_upload.assert_called_once_with(mock_page_name, review, username)
+        assert response.status_code == 302
+        assert response.headers['Location'] == f"/pages/{mock_page_name}"
+        assert b"Redirecting" in response.data
+
+        resp = client.get(f'/pages/{mock_page_name}')
+        assert resp.status_code == 200
+        assert b"submit" in resp.data
+
+def test_whitespace_review_written_while_logged_in(client):
+    with patch("flaskr.backend.Backend.upload_reviews") as mock_upload:
+        mock_upload.return_value = None
+        mock_page_name = "test_page"
+        empty_review = "      "
+        username = "sajan"
+        with client.session_transaction() as session:
+            session['loggedin'] = True
+            session['username'] = username
+        
+        response = client.post(f"/pages/{mock_page_name}", data={"review": empty_review})
+        assert not mock_upload.called       #the upload_reviews is not called
+        assert response.status_code == 302
+        assert response.headers['Location'] == f"/pages/{mock_page_name}"
+        assert b"Redirecting" in response.data
+
+        resp = client.get(f'/pages/{mock_page_name}')
+        assert resp.status_code == 200
+        assert b"submit" in resp.data
+
+def test_review_written_while_not_logged_in(client):
+    with patch("flaskr.backend.Backend.upload_reviews") as mock_upload:
+        mock_upload.return_value = None
+        mock_page_name = "test_page"
+        review = "I really like this place. It was really fun to visit it"
+        response = client.post(f"/pages/{mock_page_name}", data={"review": review})
+        assert not mock_upload.called
+        assert response.status_code == 302
+        assert response.headers['Location'] == "/signin"
+        assert b"Redirecting" in response.data
+        assert b'target URL: <a href="/signin">/signin</a>' in response.data
+    
+    
+def test_if_user_review_is_displayed_in_specified_pages(client):
+    with patch("flaskr.backend.Backend.get_wiki_page") as mock_get_wiki_page:
+        with patch("flaskr.backend.Backend.get_reviews") as mock_get_reviews:
+            mock_page_name = "test_page"
+            page_data = "This is a the content of with the page"
+            reviews_present = ['I', 'really', 'like', 'this', 'place']
+            mock_get_wiki_page.return_value = page_data
+            mock_get_reviews.return_value = reviews_present
+            response = client.get(f"/pages/{mock_page_name}")
+
+            assert response.status_code == 200
+            assert page_data.encode() in response.data
+            for review in reviews_present:
+                assert review.encode() in response.data
+
+def test_succesfull_login_redirects_to_previous_page(client):
+    with patch("flaskr.backend.Backend.sign_in") as mock_sign_in:
+        mock_page_name = "test_page"
+        login_details = {'username': 'user1', 'password': 'user1_password'}
+        mock_sign_in.return_value = True
+        with client.session_transaction() as session:
+            session['page_to_redirect'] = mock_page_name
+
+        response = client.post("/signin", data = login_details)
+        assert response.status_code == 302
+        assert b"Redirecting" in response.data
+        assert b"test_page" in response.data
+
+def test_if_page_to_redirect_changed(client):
+        mock_page_name = "test_page"
+        review = "I really like this place. It was really fun to visit it"
+        client.post(f"/pages/{mock_page_name}", data={'review': review})
+        with client.session_transaction() as session:
+            assert session['page_to_redirect'] == f"/pages/{mock_page_name}"
+
+def test_review_is_not_cleared_from_form_even_After_redirecting(client):
+    mock_page_name = "test_page"
+    review = "I really like this place. It was really fun to visit it"
+    response = client.post(f"/pages/{mock_page_name}", data={'review': review})
+    with client.session_transaction() as session:
+        assert response.status_code == 302
+        assert session["review_text"] == review
+    response = client.get(response.location, follow_redirects=True)
+    assert response.status_code == 200
 
 def test_home_page(client):
     resp = client.get("/")
@@ -144,6 +243,7 @@ def test_home_page(client):
     assert b'<li><a href="/about">About</a></li>' in resp.data
     assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
+
 
 
 # TODO(Project 1): Write tests for other routes.
