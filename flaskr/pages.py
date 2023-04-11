@@ -105,7 +105,7 @@ def make_endpoints(app):
         #changed parameters to get page content from tuple
         return render_template("wiki_page.html",
                                page_name=final_page_name,
-                               page_content=curr_page_content[0], page_link =curr_page_content[1])
+                               page_content=curr_page_content[0], page_link =curr_page_content[1], Variable_to_store_the_financial_experience = '$1200')
 
     @app.route('/pages', methods=['GET', 'POST'])
     def pages():
