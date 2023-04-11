@@ -284,7 +284,6 @@ def test_get_image_if_image_not_found(backend):
     """
     checks if the get_image method returns error if the image is not found in the bucket
     """
-
     image_name = "unavilable_img.jpeg"
     curr_mock_blob = MagicMock()
     curr_mock_blob.exists.return_value = False

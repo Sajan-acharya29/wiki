@@ -21,7 +21,6 @@ def client(app):
     return app.test_client()
 
 
-
 # TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
 # match the changes made in the other Checkpoint Requirements.
 def test_home_page(client):
@@ -53,11 +52,13 @@ def test_signin(client):
     assert b'<input type="submit" value="Login" id="login-form-submit">' in resp.data
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>' not in resp.data
 
+
 def test_signout(client):
     resp = client.get("/logout")
     assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
+
 
 def test_home_page(client):
     resp = client.get("/")
@@ -289,7 +290,6 @@ def test_review_is_not_cleared_from_form_even_after_redirecting(client):
         assert session["review_text"] == review
     response = client.get(response.location, follow_redirects=True)
     assert response.status_code == 200
-
 
 
 # TODO(Project 1): Write tests for other routes.

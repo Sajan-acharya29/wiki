@@ -17,6 +17,7 @@ class Backend:
         self.content_bucket = self.client.bucket(self.content_bucket_name)
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
+
     def get_wiki_page(self, page_name):
         """
         Gets the content of a wiki page from the content bucket with the specified name
@@ -26,6 +27,7 @@ class Backend:
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
+
 
     def get_all_page_names(self):
         """
@@ -40,12 +42,14 @@ class Backend:
                 all_pages_list.append(curr_page_name)
         return all_pages_list
 
+
     def upload(self, file_name, content):
         """
         Uploads the given file content to the content bucket with the given filename.
         """
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
+
 
     def sign_up(self, username, password):
         """
@@ -63,6 +67,7 @@ class Backend:
         curr_user_details = username + ":" + hashed_password
         blob.upload_from_string(curr_user_details)
         return True  # User added successfully
+
 
     def sign_in(self, username, password):
         """
@@ -96,7 +101,6 @@ class Backend:
         return image_bytes
 
     """ Below methods for uploading and getting reviews"""
-
     def upload_reviews(self, page_name, curr_user_review, username):
         """
         Uploads a new review to a review_ file in the content bucket, or creates a new review_ file with given filename for the particular page if it doesn't exist
@@ -135,8 +139,6 @@ class Backend:
 # review_text = "I liked the emoji at the end. So this means that you are doing your work"
 # my.upload_reviews(page_name, review_text, user)
 # print("succesfully worked")
-
-
 
 # curr_review = my.get_reviews(page_name)
 # print(curr_review)

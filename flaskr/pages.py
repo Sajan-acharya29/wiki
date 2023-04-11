@@ -16,6 +16,7 @@ def make_endpoints(app):
         greetings = "Welcome To Brainiacs"
         return render_template("main.html", greetings=greetings)
 
+
     # @app.route('/about')
     # def about():
     #     # first_image_bytes = my.get_image("cameron.jpeg")
@@ -25,6 +26,7 @@ def make_endpoints(app):
     #     return render_template("about.html")
 
     # TODO(Project 1): Implement additional routes according to the project requirements.
+
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
@@ -60,7 +62,7 @@ def make_endpoints(app):
                 return render_template('upload.html',message="wrong format file")
         return render_template("upload.html")
 
-    # this is just for the checking purpose.
+
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
         if session.get('loggedin', False) == True:
@@ -84,6 +86,7 @@ def make_endpoints(app):
                 message = "Incorrect username or password"
         return render_template("signin.html", message=message)
 
+
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():  
         if session.get('loggedin', False) == True:
@@ -104,6 +107,7 @@ def make_endpoints(app):
                 message = "Username already present"
         return render_template("signup.html", message = message)
 
+
     @app.route('/about')
     def about():
         # first_image_bytes = my.get_image("cameron.jpeg")
@@ -111,6 +115,7 @@ def make_endpoints(app):
         #     img.save("downloaded_img_file.jpeg")
         # saves the image file into the current directory.
         return render_template("about.html")
+
 
     @app.route('/pages/<page_name>', methods = ["GET", "POST"])
     def page(page_name):
@@ -150,6 +155,7 @@ def make_endpoints(app):
                                 reviews = stored_reviews,
                                 review_text = old_review_text)
 
+
     @app.route('/pages')
     def pages():        
         """
@@ -157,6 +163,7 @@ def make_endpoints(app):
         """
         all_page_names = my_backend.get_all_page_names()
         return render_template("pages.html", all_page_names=all_page_names)
+
 
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
