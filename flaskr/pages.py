@@ -116,7 +116,7 @@ def make_endpoints(app):
         # saves the image file into the current directory.
         return render_template("about.html")
 
-
+    
     @app.route('/pages/<page_name>', methods = ["GET", "POST"])
     def page(page_name):
         """

@@ -99,7 +99,7 @@ class Backend:
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
-
+    
     """ Below methods for uploading and getting reviews"""
     def upload_reviews(self, page_name, curr_user_review, username):
         """
