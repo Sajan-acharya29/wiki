@@ -21,11 +21,6 @@
             <iframe src={{page_link}} id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         {% endif %}
 
-            <!-- <script> 
-            var Variable_to_store_the_financial_experience = "1200"
-            //var Variable_to_store_the_financial_experience = {{Variable_to_store_the_financial_experience}}
-            </script> -->
-        <!-- Display the Financial experience of the user -->
         <style>
         #element {
             width:20%;
@@ -36,10 +31,9 @@
             border-color: black;
           }
         </style>
-        {% if Variable_to_store_the_financial_experience != '' %}
+        <!-- Change this if statement -->
+        {% if Variable_to_store_the_financial_experience != None %}
             <h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>
-            <!-- <h1 class="w3-text-teal" style="color: #39FF33;  border-style: solid; border-color: black;"> {{Variable_to_store_the_financial_experience}} </h1> -->
-            <!-- <strong style="color: #39FF33; font-size: 100;" > {{Variable_to_store_the_financial_experience}} </strong> -->
         {% endif %}
     </div>
 {% endblock content %} 
