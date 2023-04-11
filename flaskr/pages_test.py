@@ -83,6 +83,7 @@ def test_upload_route_user_not_logged_in(client):
         response = client.post("/upload", data= data)
         assert response.status_code == 302    #the upload route redirect to home if logged in 
 
+
 def test_upload_route_successful(client):
     """
     Tests if the upload route is sucessfully uploading the file
@@ -160,6 +161,7 @@ def test_upload_route_get_method(client):
     assert response.status_code == 200
     assert b'Upload new File' in response.data
 
+
 def test_review_written_while_logged_in(client):
     """
     Tests if the user can write review if they are logged in. 
@@ -184,6 +186,7 @@ def test_review_written_while_logged_in(client):
         assert resp.status_code == 200
         assert b"submit" in resp.data
 
+
 def test_whitespace_review_written_while_logged_in(client):
     """
     Tests if the user cannot submit the empty comment or whitespaces only. 
@@ -207,6 +210,7 @@ def test_whitespace_review_written_while_logged_in(client):
         resp = client.get(f'/pages/{mock_page_name}')
         assert resp.status_code == 200
         assert b"submit" in resp.data
+
 
 def test_review_written_while_not_logged_in(client):
     """
@@ -242,6 +246,7 @@ def test_if_user_review_is_displayed_in_specified_pages(client):
             for review in reviews_present:
                 assert review.encode() in response.data
 
+
 def test_succesfull_login_redirects_to_previous_page(client):
     """
     Tests if the user is redirected to the last viewed page after successfully signing in. 
@@ -259,6 +264,7 @@ def test_succesfull_login_redirects_to_previous_page(client):
         assert b"Redirecting" in response.data
         assert b"test_page" in response.data
 
+
 def test_if_page_to_redirect_changed(client):
     """
     Tests If the session stores the last opened page name. 
@@ -269,6 +275,7 @@ def test_if_page_to_redirect_changed(client):
     client.post(f"/pages/{mock_page_name}", data={'review': review})
     with client.session_transaction() as session:
         assert session['page_to_redirect'] == f"/pages/{mock_page_name}"
+
 
 def test_review_is_not_cleared_from_form_even_after_redirecting(client):
     """
