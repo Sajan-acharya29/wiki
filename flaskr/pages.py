@@ -64,9 +64,11 @@ def make_endpoints(app):
         if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
             username = request.form['username']
             password = request.form['password']
+            
             if my_backend.sign_in(username, password):  # True if sign up is successful
                 session['loggedin'] = True
                 session['username'] = username
+                
                 if "page_to_redirect" in session:
                     redirect_page = session.pop("page_to_redirect")
                     return redirect(redirect_page)   
