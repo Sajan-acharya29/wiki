@@ -74,7 +74,6 @@ def test_upload_route_user_not_logged_in(client):
     Tests the upload route's behavior when a user who is not logged in tries to upload a file.
     checks if the user is redirected to homepage with status code 302
     """
-    
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
             session['loggedin'] = False
@@ -103,8 +102,9 @@ def test_upload_route_successful(client):
 
 
 def test_upload_route_empty_file_name(client):
-    """Tests if the upload route gives redirects to request url if no file selected"""
-
+    """
+    Tests if the upload route gives redirects to request url if no file selected
+    """
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
             session['loggedin'] = True
