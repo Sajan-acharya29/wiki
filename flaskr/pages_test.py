@@ -1,4 +1,6 @@
 from flaskr import create_app
+from flaskr.backend import Backend
+from flask import session
 from unittest.mock import patch
 import io
 import pytest
@@ -176,6 +178,21 @@ def test_wiki_page_Financial_experience_1(client):
     resp = client.get("/pages/test")
     assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
 
+def mock_sign_in():
+    with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
+        yield mock_sign_in
+
+# @patch('flaskr.backend.Backend.sign_in', return_value=True)
+def test_signin_successful(app, client):
+    with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
+        mock_sign_in.return_value = True
+        response = client.post('/signin', data={'username': 'test_user', 'password': 'test_password'})
+        mock_sign_in.assert_called_once_with('test_user', 'test_password')
+        # assert b'sent_user_name=test_user' in response.data
+        # assert b'signed_in=True' in response.data
+        with client.session_transaction() as sess:
+            assert sess['loggedin'] == True
+            assert sess['username'] == 'test_user'
 
 # TODO(Project 1): Write tests for other routes.
 """this test is failing"""

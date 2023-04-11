@@ -1,5 +1,6 @@
 from flask import Flask, flash, request, redirect, url_for, render_template
 from flaskr.backend import Backend
+from flask import session
 
 
 def make_endpoints(app):
@@ -58,19 +59,28 @@ def make_endpoints(app):
                                        message="wrong format file")
         return render_template("upload.html")
 
-    # this is just for the checking purpose.
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
-        if request.method == 'POST':
-            print("function calleeddd")
+        if session.get('loggedin', False) == True:
+            return redirect(url_for('home'))
+        message = None
+        if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
             username = request.form['username']
             password = request.form['password']
 
-            if my_backend.sign_in(username, password):
+            if my_backend.sign_in(username, password):  # True if sign up is successful
+                session['loggedin'] = True
+                session['username'] = username
+
+                if "page_to_redirect" in session:
+                    redirect_page = session.pop("page_to_redirect")
+                    return redirect(redirect_page)
                 return render_template("main.html",
                                        sent_user_name=username,
                                        signed_in=True)
-        return render_template("signin.html")
+            else:
+                message = "Incorrect username or password"
+        return render_template("signin.html", message=message)
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
