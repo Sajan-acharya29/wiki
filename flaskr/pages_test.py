@@ -59,7 +59,22 @@ def test_signout(client):
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
 
+def test_home_page(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert b'<li><a href="/">Home</a></li>' in resp.data
+    assert b'<li><a href="/pages">Pages</a></li>' in resp.data
+    assert b'<li><a href="/about">About</a></li>' in resp.data
+    assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
+    assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
+
+
 def test_upload_route_user_not_logged_in(client):
+    """
+    Tests the upload route's behavior when a user who is not logged in tries to upload a file.
+    checks if the user is redirected to homepage with status code 302
+    """
+    
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
             session['loggedin'] = False
@@ -70,7 +85,9 @@ def test_upload_route_user_not_logged_in(client):
         assert response.status_code == 302    #the upload route redirect to home if logged in 
 
 def test_upload_route_successful(client):
-    """ tests if the upload route is sucessfully uploading the file"""
+    """
+    Tests if the upload route is sucessfully uploading the file
+    """
     with patch("flaskr.backend.Backend.upload", return_value=None):
             with client.session_transaction() as session:
                 session['loggedin'] = True
@@ -86,7 +103,7 @@ def test_upload_route_successful(client):
 
 
 def test_upload_route_empty_file_name(client):
-    """tests if the upload route gives redirects to request url if no file selected"""
+    """Tests if the upload route gives redirects to request url if no file selected"""
 
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
@@ -104,7 +121,9 @@ def test_upload_route_empty_file_name(client):
 
 
 def test_upload_route_no_file_content(client):
-    """tests if the upload route gives redirects to request url if file is empty"""
+    """
+    Tests if the upload route gives redirects to request url if file is empty
+    """
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
             session['loggedin'] = True
@@ -116,7 +135,9 @@ def test_upload_route_no_file_content(client):
 
 
 def test_upload_route_wrong_extension(client):
-    """tests if the upload route returns wrong format file error if file is of invalid extension"""
+    """
+    Tests if the upload route returns wrong format file error if file is of invalid extension
+    """
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
             session['loggedin'] = True
@@ -130,7 +151,9 @@ def test_upload_route_wrong_extension(client):
 
 
 def test_upload_route_get_method(client):
-    """tests the get method of the upload route"""
+    """
+    Tests the get method of the upload route
+    """
     with client.session_transaction() as session:
             session['loggedin'] = True
     response = client.get("/upload")
@@ -138,6 +161,10 @@ def test_upload_route_get_method(client):
     assert b'Upload new File' in response.data
 
 def test_review_written_while_logged_in(client):
+    """
+    Tests if the user can write review if they are logged in. 
+    checks if backend method is called which uploads the reviews to the bucket and page redirected again.
+    """
     with patch("flaskr.backend.Backend.upload_reviews") as mock_upload:
         mock_upload.return_value = None
         mock_page_name = "test_page"
@@ -158,6 +185,10 @@ def test_review_written_while_logged_in(client):
         assert b"submit" in resp.data
 
 def test_whitespace_review_written_while_logged_in(client):
+    """
+    Tests if the user cannot submit the empty comment or whitespaces only. 
+    Tests if backend method is not called which and user is redirected to same page
+    """
     with patch("flaskr.backend.Backend.upload_reviews") as mock_upload:
         mock_upload.return_value = None
         mock_page_name = "test_page"
@@ -178,6 +209,9 @@ def test_whitespace_review_written_while_logged_in(client):
         assert b"submit" in resp.data
 
 def test_review_written_while_not_logged_in(client):
+    """
+    Test if the user is redirected to the logged in page when they try to submit the review without being logged in.
+    """
     with patch("flaskr.backend.Backend.upload_reviews") as mock_upload:
         mock_upload.return_value = None
         mock_page_name = "test_page"
@@ -191,6 +225,9 @@ def test_review_written_while_not_logged_in(client):
     
     
 def test_if_user_review_is_displayed_in_specified_pages(client):
+    """
+    Tests that the new review is displayed on the specified page combined with the existing reviews.
+    """
     with patch("flaskr.backend.Backend.get_wiki_page") as mock_get_wiki_page:
         with patch("flaskr.backend.Backend.get_reviews") as mock_get_reviews:
             mock_page_name = "test_page"
@@ -206,6 +243,10 @@ def test_if_user_review_is_displayed_in_specified_pages(client):
                 assert review.encode() in response.data
 
 def test_succesfull_login_redirects_to_previous_page(client):
+    """
+    Tests if the user is redirected to the last viewed page after successfully signing in. 
+    Also checks if the Redirecting and the page name is present in the response.
+    """
     with patch("flaskr.backend.Backend.sign_in") as mock_sign_in:
         mock_page_name = "test_page"
         login_details = {'username': 'user1', 'password': 'user1_password'}
@@ -219,13 +260,20 @@ def test_succesfull_login_redirects_to_previous_page(client):
         assert b"test_page" in response.data
 
 def test_if_page_to_redirect_changed(client):
-        mock_page_name = "test_page"
-        review = "I really like this place. It was really fun to visit it"
-        client.post(f"/pages/{mock_page_name}", data={'review': review})
-        with client.session_transaction() as session:
-            assert session['page_to_redirect'] == f"/pages/{mock_page_name}"
+    """
+    Tests If the session stores the last opened page name. 
+    This allows the user to return back to the page where they can finally submit the review.
+    """
+    mock_page_name = "test_page"
+    review = "I really like this place. It was really fun to visit it"
+    client.post(f"/pages/{mock_page_name}", data={'review': review})
+    with client.session_transaction() as session:
+        assert session['page_to_redirect'] == f"/pages/{mock_page_name}"
 
-def test_review_is_not_cleared_from_form_even_After_redirecting(client):
+def test_review_is_not_cleared_from_form_even_after_redirecting(client):
+    """
+    Tests that the review text is still present in the review box after getting redirected from the login.
+    """
     mock_page_name = "test_page"
     review = "I really like this place. It was really fun to visit it"
     response = client.post(f"/pages/{mock_page_name}", data={'review': review})
@@ -234,15 +282,6 @@ def test_review_is_not_cleared_from_form_even_After_redirecting(client):
         assert session["review_text"] == review
     response = client.get(response.location, follow_redirects=True)
     assert response.status_code == 200
-
-def test_home_page(client):
-    resp = client.get("/")
-    assert resp.status_code == 200
-    assert b'<li><a href="/">Home</a></li>' in resp.data
-    assert b'<li><a href="/pages">Pages</a></li>' in resp.data
-    assert b'<li><a href="/about">About</a></li>' in resp.data
-    assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
-    assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
 
 
 
