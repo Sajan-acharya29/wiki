@@ -296,18 +296,16 @@ def test_get_image_if_image_not_found(backend):
     assert received_image_error == expected_image_error
 
 
-
 #for review sections tests
 def test_upload_reviews_if_old_reviews_present(backend):
     """
-    
+    Tests that the upload_reviews method uploads the fresh review to the paage's reviews file along with other existing reviews
     """
     mock_page_name = "test_page"
     mock_username = "sajan"
     new_mock_review = "I really like this place. It was really fun to visit it."
     unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"
     old_mock_reviews = f'first_review{unique_review_connector}second_review{unique_review_connector}third_review{unique_review_connector}fourth_review'
-
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
     mock_blob.download_as_text.return_value =  old_mock_reviews 
@@ -326,7 +324,7 @@ def test_upload_reviews_if_old_reviews_present(backend):
 
 def test_upload_reviews_if_old_reviews_not_present(backend):
     """
-
+    Tests that the upload_reviews method creates a new file to uploads the fresh review to the paage if previous reviews does not exist.
     """
     mock_page_name = "test_page"
     mock_username = "test_user"
@@ -343,10 +341,13 @@ def test_upload_reviews_if_old_reviews_not_present(backend):
     backend.content_bucket.blob.assert_called_once_with(review_stored_file)
 
     current_uploaded_string = mock_blob.upload_from_string.call_args[0][0]   # call args is a tuple of tuple  
-    returned_reviews = current_uploaded_string    #should not split as just one comment do not have the connector
+    returned_reviews = current_uploaded_string    #should not split as just one review do not have the connector
     assert expected_reviews == returned_reviews
 
 def test_get_reviews_if_no_old_reviews(backend):
+    """
+    Tests that the get_reviews method returns the empty list when there are no reviews in for the specified page in the content bucket
+    """
     mock_page_name = "test_page"
     mock_blob = MagicMock()
     mock_blob.exists.return_value = False
@@ -356,6 +357,9 @@ def test_get_reviews_if_no_old_reviews(backend):
     assert recieved_review_from_buckets == expected_result
 
 def test_get_reviews_if_old_reviews_present(backend):
+    """
+    Tests that the get_reviews method returns the list of exisiting reviews for the specified page in the content bucket
+    """
     mock_page_name = "test_page"
     unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"
     mock_reviews = f'first_review{unique_review_connector}second_review{unique_review_connector}third_review{unique_review_connector}fourth_review'
@@ -366,4 +370,3 @@ def test_get_reviews_if_old_reviews_present(backend):
     expected_reviews = ["first_review", "second_review", "third_review", "fourth_review"]
     recieved_review_from_buckets = backend.get_reviews(mock_page_name)
     assert recieved_review_from_buckets == expected_reviews
-    

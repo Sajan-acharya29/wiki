@@ -27,25 +27,23 @@ class Backend:
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
 
-    # def get_all_page_names(self):
-    #     """returns names of all wiki pages or txt files user upload in the content bucket."""
-    #     all_pages_list = []
-    #     blobs = self.content_bucket.list_blobs(prefix="")
-    #     for  blob in blobs:
-    #         if blob.name.endswith(".txt"):
-    #             all_pages_list.append(blob.name)
-    #     return all_pages_list
     def get_all_page_names(self):
-        """returns names of all wiki pages or txt files user upload in the content bucket."""
+        """
+        returns names of all wiki pages or txt files user upload in the content bucket.
+        ignores the txt file that start with finances_ and review_
+        """
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
-            if blob.name.endswith(".txt") and blob.name[0:7] != "review_":       #just to show the pages instead of reviews
+            if blob.name.endswith(".txt") and blob.name[0:7] != "review_" and blob.name[0:9] != "finances_":       #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
 
     def upload(self, file_name, content):
+        """
+        Uploads the given file content to the content bucket with the given filename.
+        """
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
 
@@ -100,6 +98,9 @@ class Backend:
     """ Below methods for uploading and getting reviews"""
 
     def upload_reviews(self, page_name, curr_user_review, username):
+        """
+        Uploads a new review to a review_ file in the content bucket, or creates a new review_ file with given filename for the particular page if it doesn't exist
+        """
         unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
         review_txt_file = f"review_{page_name}.txt"        
         blob = self.content_bucket.blob(review_txt_file)
@@ -114,6 +115,9 @@ class Backend:
         blob.upload_from_string(updated_review_data)
     
     def get_reviews(self, page_name):
+        """
+        Retrives the reviews from a text file in the content bucket for a given wiki page.
+        """
         unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
         review_txt_file = f"review_{page_name}.txt"
         blob = self.content_bucket.blob(review_txt_file)

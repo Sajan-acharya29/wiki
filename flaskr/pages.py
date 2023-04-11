@@ -28,7 +28,12 @@ def make_endpoints(app):
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
-        """checks the extension and uploads valid files to the content bucket"""
+        """
+        This route handles GET and POST requests for uploading files to a content bucket.
+        It checks if the user is logged in using session variables, 
+        checks that the uploaded file has a valid extension, and uploads the file to the content bucket if it is valid. 
+        If the file is uploaded successfully, it renders a success message. If not, it renders an error message
+        """        
         if not session.get('loggedin', False):
             return redirect(url_for('home'))
 
@@ -99,20 +104,22 @@ def make_endpoints(app):
                 message = "Username already present"
         return render_template("signup.html", message = message)
 
-    #this is camerons
-
     @app.route('/about')
     def about():
         # first_image_bytes = my.get_image("cameron.jpeg")
         # with Image.open(io.BytesIO(first_image_bytes)) as img:
         #     img.save("downloaded_img_file.jpeg")
         # saves the image file into the current directory.
-
-
         return render_template("about.html")
 
     @app.route('/pages/<page_name>', methods = ["GET", "POST"])
     def page(page_name):
+        """
+        This route handles GET and POST requests for wiki pages.
+        it retrieves wiki page content and stored reviews from a backend, 
+        and uploads reviews to the backend with the file name if the user is logged in. 
+        It also handles session variables and redirects to the last visited page if succesfully logged in
+        """
         #adding sessions to prevent from logging out without logout
         if request.method == "POST":
             if "loggedin" not in session:
@@ -144,13 +151,21 @@ def make_endpoints(app):
                                 review_text = old_review_text)
 
     @app.route('/pages')
-    def pages():
-        """gets the page names from bucket and passes it to """
+    def pages():        
+        """
+        gets the page names from bucket and passes it to
+        """
         all_page_names = my_backend.get_all_page_names()
         return render_template("pages.html", all_page_names=all_page_names)
 
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
+        """
+        This route handles the logout of the user.
+        If the user is not logged in, it redirects to the home page. 
+        If the user is logged in, it removes the 'loggedin' and 'username' keys from the session
+        and then redirects to the home page.
+        """
         if session.get('loggedin', False) == False:
             return redirect(url_for('home'))
         
