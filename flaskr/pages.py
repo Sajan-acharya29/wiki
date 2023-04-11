@@ -61,6 +61,7 @@ def make_endpoints(app):
 
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
+        '''Gets the user input and checks with the backend if the username with password matches'''
         if session.get('loggedin', False) == True:
             return redirect(url_for('home'))
         message = None
@@ -84,6 +85,7 @@ def make_endpoints(app):
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
+        '''Gets the user input and sends it to the backend to register the user'''
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']

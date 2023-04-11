@@ -184,6 +184,7 @@ def mock_sign_in():
 
 # @patch('flaskr.backend.Backend.sign_in', return_value=True)
 def test_signin_successful(app, client):
+    '''Test if User is being verified'''
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         mock_sign_in.return_value = True
         response = client.post('/signin', data={'username': 'test_user', 'password': 'test_password'})
