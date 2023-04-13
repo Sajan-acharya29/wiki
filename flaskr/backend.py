@@ -4,6 +4,7 @@ import hashlib
 from flask import send_file
 import io
 import sys
+from PIL import Image
 
 
 class Backend:
@@ -22,7 +23,7 @@ class Backend:
         Gets the content of a wiki page from the content bucket with the specified name
         returns Content of the wiki page, or None if the page does not exist.
         """
-        specified_page = self.content_bucket.blob(page_name)
+        specified_page = self.content_bucket.blob(page_name)     
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
@@ -30,7 +31,7 @@ class Backend:
     # def get_all_page_names(self):
     #     """returns names of all wiki pages or txt files user upload in the content bucket."""
     #     all_pages_list = []
-    #     blobs = self.content_bucket.list_blobs(prefix="")
+    #     blobs = self.content_bucket.list_blobs(prefix="") 
     #     for  blob in blobs:
     #         if blob.name.endswith(".txt"):
     #             all_pages_list.append(blob.name)
@@ -38,16 +39,17 @@ class Backend:
     def get_all_page_names(self):
         """returns names of all wiki pages or txt files user upload in the content bucket."""
         all_pages_list = []
-        blobs = self.content_bucket.list_blobs(prefix="")
-        for blob in blobs:
-            if blob.name.endswith(".txt"):
-                curr_page_name = blob.name[:len(blob.name) - 4]
+        blobs = self.content_bucket.list_blobs(prefix="") 
+        for  blob in blobs:
+            if blob.name.endswith(".txt"): 
+                curr_page_name = blob.name[:len(blob.name)-4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
-
+    
     def upload(self, file_name, content):
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
+
 
     def sign_up(self, username, password):
         """
@@ -57,14 +59,13 @@ class Backend:
         site_secret = "brainiacs_password"
         blob = self.user_bucket.blob(username)
         if blob.exists():
-            return False  #User already exists  so returns False
+            return False       #User already exists  so returns False
 
         password_with_salt = f"{username}{site_secret}{password}"
-        hashed_password = hashlib.blake2b(
-            password_with_salt.encode()).hexdigest()  #returns a str objects
+        hashed_password = hashlib.blake2b(password_with_salt.encode()).hexdigest()     #returns a str objects
         curr_user_details = username + ":" + hashed_password
         blob.upload_from_string(curr_user_details)
-        return True  # User added successfully
+        return True # User added successfully
 
     def sign_in(self, username, password):
         """
@@ -73,19 +74,17 @@ class Backend:
         """
         blob = self.user_bucket.blob(username)
         if not blob.exists():
-            return False  #User does not exist
-        curr_user_details = blob.download_as_text(
-        )  #downloads : "sajan:testpassword"
+            return False         #User does not exist
+        curr_user_details = blob.download_as_text()        #downloads : "sajan:testpassword"
         stored_user_password = curr_user_details.split(":")[1]
-
+    
         site_secret = "brainiacs_password"
         password_with_salt = f"{username}{site_secret}{password}"
-        hashed_password = hashlib.blake2b(
-            password_with_salt.encode()).hexdigest()
+        hashed_password = hashlib.blake2b(password_with_salt.encode()).hexdigest()  
         if hashed_password == stored_user_password:
-            return True  #signed in successfully
-        return False  #wrong password
-
+            return True                  #signed in successfully
+        return False            #wrong password
+    
     def get_image(self, image_name):
         """
         Gets an image from the image bucket.
@@ -97,9 +96,39 @@ class Backend:
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
+    
+    
+    def store_finances_answers(self, page_name, answers, verified):
+        if not verified:
+            return "Please log in"
+
+        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"    #this becomes the connector of the finances info. so we can seperate finances answers based on this.
+        finance_answers_txt_file = f"finances_{page_name}.txt"        
+        blob = self.content_bucket.blob(finance_answers_txt_file)
+        if blob.exists():
+          old_finances_text = blob.download_as_text()
+          old_finances_answers_list = old_finances_text.split(unique_finance_answers_connector)
+        else:
+          old_finances_answers_list = []
+        new_finance_answer = answers
+        old_finances_answers_list.append(new_finance_answer)
+        updated_finance_answers = unique_finance_answers_connector.join(old_finances_answers_list)   #adds the new finances information to the old list with the unique connecter string added to the end.
+        blob.upload_from_string(updated_finance_answers)
+        return "Successfully Uploaded"
+
+    def store_review(self, page_name, review):
+        review_for_page = f"review_{page_name}.txt"        
+        blob = self.content_bucket.blob(review_for_page)
+        blob.upload_from_string(review)
+        return "Review Uploaded"
 
 
 my = Backend()
+page_name = "test_upload_cam2"
+review = "This is a good page. Test2" 
+added = my.store_review(page_name, review)
+print(added)
+
 
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)
@@ -133,3 +162,4 @@ my = Backend()
 # with Image.open(io.BytesIO(image_bytes)) as img:
 #     img.save("downloaded_img_file.jpeg")
 # saves the image file into the current directory.
+
