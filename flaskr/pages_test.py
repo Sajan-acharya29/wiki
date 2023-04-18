@@ -146,7 +146,7 @@ def test_upload_route_get_method(client):
     assert b'Upload new File' in response.data
 
 
-def test_home_page(client):
+def test_home_page1(client):
     resp = client.get("/")
     assert resp.status_code == 200
     assert b'<li><a href="/">Home</a></li>' in resp.data
@@ -188,7 +188,7 @@ def test_signin_successful(app, client):
         mock_sign_in.return_value = True
         response = client.post('/signin', data={'username': 'test_user', 'password': 'test_password'})
         mock_sign_in.assert_called_once_with('test_user', 'test_password')
-        
+
         with client.session_transaction() as sess:
             assert sess['loggedin'] == True
             assert sess['username'] == 'test_user'
