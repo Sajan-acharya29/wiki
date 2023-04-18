@@ -17,14 +17,15 @@ class Backend:
         self.content_bucket = self.client.bucket(self.content_bucket_name)
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
-    def identify_wiki_page_content(self, page_name): 
+    def identify_wiki_page_content(self, page_name):
         '''Gets the content of a wiki page from the content bucket 
         with the specified name returns Content of the wiki page as a list of words'''
-        specified_page = self.content_bucket.blob(page_name)     
+        specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text().split()    #return a list of all the words. 
-        
+        return specified_page.download_as_text().split(
+        )  #return a list of all the words.
+
         return specified_page.download_as_text().split()
 
     def get_wiki_page(self, page_name):
@@ -35,10 +36,10 @@ class Backend:
         track = 0
         for word in content:
             if word[0:5] == "Link:":
-                if len(word) > 5 and track+1 >= len(content):
+                if len(word) > 5 and track + 1 >= len(content):
                     link = word[5:]
                 else:
-                    link = content[track+1]
+                    link = content[track + 1]
                 break
             Description += ' ' + word
             track += 1
@@ -121,7 +122,7 @@ my = Backend()
 pagename = 'test_file.txt'
 result = my.identify_wiki_page_content(pagename)
 print(result)
-expected =  ['this', 'is', 'a', 'test', 'file']
+expected = ['this', 'is', 'a', 'test', 'file']
 
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)

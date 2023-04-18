@@ -69,7 +69,8 @@ def make_endpoints(app):
             username = request.form['username']
             password = request.form['password']
 
-            if my_backend.sign_in(username, password):  # True if sign up is successful
+            if my_backend.sign_in(username,
+                                  password):  # True if sign up is successful
                 session['loggedin'] = True
                 session['username'] = username
 
@@ -113,11 +114,14 @@ def make_endpoints(app):
         curr_page_content = my_backend.get_wiki_page(final_page_name)
         print(curr_page_content,
               "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        
+
         #changed parameters to get page content from tuple
-        return render_template("wiki_page.html",
-                               page_name=final_page_name,
-                               page_content=curr_page_content[0], page_link =curr_page_content[1], Variable_to_store_the_financial_experience = '$1200')
+        return render_template(
+            "wiki_page.html",
+            page_name=final_page_name,
+            page_content=curr_page_content[0],
+            page_link=curr_page_content[1],
+            Variable_to_store_the_financial_experience='$1200')
 
     @app.route('/pages', methods=['GET', 'POST'])
     def pages():

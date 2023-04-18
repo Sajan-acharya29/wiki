@@ -155,43 +155,54 @@ def test_home_page1(client):
     assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
 
+
 def test_wiki_page_Google_Map(client):
     '''Test if Google Map snapshot is being displayed'''
     resp = client.get("/pages/dumbarton")
     assert b'<iframe src=https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3104.430007084699!2d-77.06620158467243!3d38.914147979568156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7b63132dc7317%3A0xc226e57a90b4dbd7!2sDumbarton%20Oaks%20Museum!5e0!3m2!1sen!2sus!4v1681009088373!5m2!1sen!2sus id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' in resp.data
 
+
 def test_wiki_page_Google_Map_1(client):
     '''Test if Google Map snapshot is not being displayed'''
     resp = client.get("/pages/test")
     assert b'<iframe src={{page_link}} id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' not in resp.data
-    
+
+
 def test_wiki_page_Financial_experience(client):
     '''Test if Financial experience is being displayed correctly'''
     resp = client.get("/pages/dumbarton")
-    html_content = resp.data.decode('utf-8') 
+    html_content = resp.data.decode('utf-8')
     start_tag = html_content.find('<h1 id="element"')
 
     assert start_tag != -1
-    
+
+
 def test_wiki_page_Financial_experience_1(client):
     '''Test if Financial experience is not being displayed'''
     resp = client.get("/pages/test")
     assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
 
+
 def mock_sign_in():
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         yield mock_sign_in
+
 
 def test_signin_successful(app, client):
     '''Test if User is being verified'''
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         mock_sign_in.return_value = True
-        response = client.post('/signin', data={'username': 'test_user', 'password': 'test_password'})
+        response = client.post('/signin',
+                               data={
+                                   'username': 'test_user',
+                                   'password': 'test_password'
+                               })
         mock_sign_in.assert_called_once_with('test_user', 'test_password')
 
         with client.session_transaction() as sess:
             assert sess['loggedin'] == True
             assert sess['username'] == 'test_user'
+
 
 # TODO(Project 1): Write tests for other routes.
 """this test is failing"""

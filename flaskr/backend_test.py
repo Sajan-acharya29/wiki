@@ -43,7 +43,9 @@ def test_get_wiki_page(backend):
     mock_page_content = "Test content Link: Testlink.com"
     mock_blob.download_as_text.return_value = mock_page_content
 
-    assert backend.get_wiki_page(mock_page_name) == (" Test content", "Testlink.com")
+    assert backend.get_wiki_page(mock_page_name) == (" Test content",
+                                                     "Testlink.com")
+
 
 def test_get_wiki_page_if_page_not_found(backend):
     """Checks if the get_wiki_page method returns error for a specific txt file not present in the bucket"""
@@ -274,6 +276,7 @@ def test_get_image_if_image_not_found(backend):
     expected_image_error = f"Error: Image {image_name} does not exists in the bucket."
     assert received_image_error == expected_image_error
 
+
 #testing the identify wiki page content method
 def test_identify_wiki_page_content_if_page_found(backend):
     """Checks if the identify_wiki_page_content method returns correct list of words for an existing specified txt file"""
@@ -289,6 +292,7 @@ def test_identify_wiki_page_content_if_page_found(backend):
     curr_page_blob.upload_from_string(mock_page_content)
     recieved_text = backend.identify_wiki_page_content(mock_page_name)
     assert recieved_text == curr_page_blob.download_as_text().split()
+
 
 def test_identify_wiki_page_content_not_found(backend):
     """Checks if the identify_wiki_page_content method returns error for a specific txt file not present in the bucket"""
