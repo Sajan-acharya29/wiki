@@ -182,15 +182,13 @@ def mock_sign_in():
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         yield mock_sign_in
 
-# @patch('flaskr.backend.Backend.sign_in', return_value=True)
 def test_signin_successful(app, client):
     '''Test if User is being verified'''
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         mock_sign_in.return_value = True
         response = client.post('/signin', data={'username': 'test_user', 'password': 'test_password'})
         mock_sign_in.assert_called_once_with('test_user', 'test_password')
-        # assert b'sent_user_name=test_user' in response.data
-        # assert b'signed_in=True' in response.data
+        
         with client.session_transaction() as sess:
             assert sess['loggedin'] == True
             assert sess['username'] == 'test_user'
