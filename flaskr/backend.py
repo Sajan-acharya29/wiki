@@ -118,12 +118,6 @@ class Backend:
         return image_bytes
 
 
-my = Backend()
-pagename = 'test_file.txt'
-result = my.identify_wiki_page_content(pagename)
-print(result)
-expected = ['this', 'is', 'a', 'test', 'file']
-
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)
 # get_page = my.get_wiki_page(get_page_names[0])
