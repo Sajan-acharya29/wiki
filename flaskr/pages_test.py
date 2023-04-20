@@ -1,15 +1,9 @@
 from flaskr import create_app
 from flask import session
-from flaskr.backend import Backend
 from unittest.mock import patch
-from unittest.mock import MagicMock
 from werkzeug.datastructures import FileStorage
-from google.oauth2.credentials import Credentials
-from unittest import mock
 import io
 import pytest
-import google.auth.credentials
-import google.cloud.storage
 
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/
@@ -25,21 +19,6 @@ def app():
 @pytest.fixture
 def client(app):
     return app.test_client()
-
-
-@pytest.fixture
-def backend():
-    """Creates a backend instance and mocks the content and user bucket"""
-    backend = Backend()
-    backend.content_bucket = MagicMock()
-    backend.user_bucket = MagicMock()
-    return backend
-
-info = {
-    'client_id': 'your_client_id',
-    'client_secret': 'your_client_secret',
-    'refresh_token': 'your_refresh_token'
-}
 
 # TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
 # match the changes made in the other Checkpoint Requirements.
@@ -174,105 +153,41 @@ def test_home_page1(client):
     assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
 
-def test_wiki_page_Google_Map(client, monkeypatch):
+def test_wiki_page_Google_Map(client):
     """Test if Google Map snapshot is being displayed"""
-    # Set up mock objects
-    mock_credentials = Credentials.from_authorized_user_info(info=info)
-    monkeypatch.setattr(google.auth, 'default', lambda: mock_credentials)
-
-    # Set up mock client and blob to return test content
-    mock_client = mock.Mock()
-    mock_storage_client = mock.Mock()
-    mock_bucket = google.cloud.storage.Bucket(name='test-bucket', client=mock_client)
-    mock_blob = google.cloud.storage.Blob(name='test-blob', bucket=None)
-    mock_bucket.blob = mock.Mock(return_value=mock_blob)
-    mock_storage_client.bucket = mock.Mock(return_value=mock_bucket)
-    monkeypatch.setattr(google.cloud.storage, 'Client', lambda: mock_storage_client)
-
-    mock_download_as_bytes = mock.Mock(return_value=b'<iframe src=https://www.google.com/maps/embed?pb=')
-    mock_blob.download_as_bytes = mock_download_as_bytes
-
-    resp = client.get("/pages/dumbarton")
-    assert b'<iframe src=https://www.google.com/maps/embed?pb=' in resp.data
+    with patch("flaskr.backend.Backend.identify_wiki_page_content", return_value=["Page", "content", "test", "Link:", "TestLink"]):
+        with patch("flaskr.backend.Backend.get_wiki_page", return_value=("Page content test", "TestLink")):
+            resp = client.get("/pages/dumbarton")
+            assert b'<iframe ' in resp.data
 
 
 def test_wiki_page_Google_Map_1(client, monkeypatch):
     '''Test if Google Map snapshot is not being displayed'''
-    # Set up mock objects
-    mock_credentials = Credentials.from_authorized_user_info(info=info)
-    monkeypatch.setattr(google.auth, 'default', lambda: mock_credentials)
-
-    # Set up mock client and blob to return test content
-    mock_client = mock.Mock()
-    mock_storage_client = mock.Mock()
-    mock_bucket = google.cloud.storage.Bucket(name='test-bucket', client=mock_client)
-    mock_blob = google.cloud.storage.Blob(name='test-blob', bucket=None)
-    mock_bucket.blob = mock.Mock(return_value=mock_blob)
-    mock_storage_client.bucket = mock.Mock(return_value=mock_bucket)
-    monkeypatch.setattr(google.cloud.storage, 'Client', lambda: mock_storage_client)
-
-    mock_download_as_bytes = mock.Mock(return_value=b'This is a test page without an iframe')
-    mock_blob.download_as_bytes = mock_download_as_bytes
-
-    resp = client.get("/pages/test")
-    assert b'<iframe' not in resp.data
+    with patch("flaskr.backend.Backend.identify_wiki_page_content", return_value=["Page", "content", "test"]):
+        with patch("flaskr.backend.Backend.get_wiki_page", return_value=("Page content test", "")):
+            resp = client.get("/pages/test")
+            assert b'<iframe ' not in resp.data
 
 
-def test_wiki_page_Financial_experience(client, monkeypatch):
+def test_wiki_page_Financial_experience(client):
     '''Test if Financial experience is being displayed correctly'''
-    # Set up mock objects
-    mock_blob = google.cloud.storage.Blob(name='test-blob', bucket=None)
-    mock_credentials = Credentials.from_authorized_user_info(info=info)
-    monkeypatch.setattr(google.auth, 'default', lambda: mock_credentials)
-
-    # Set up mock client and bucket to return mock_blob
-    mock_client = mock.Mock()
-    mock_storage_client = mock.Mock()
-    mock_bucket = google.cloud.storage.Bucket(name='test-bucket', client=mock_client)
-    mock_bucket.blob = mock.Mock(return_value=mock_blob)
-    mock_storage_client.bucket = mock.Mock(return_value=mock_bucket)
-    monkeypatch.setattr(google.cloud.storage, 'Client', lambda: mock_storage_client)
-
-    # Set up mock blob to return test content
-    mock_page_content = b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> Test </span> </h1>'
-    mock_download_as_bytes = mock.Mock(return_value=mock_page_content)
-    mock_blob.download_as_bytes = mock_download_as_bytes
-
     # Make the request and test the response
-    with patch("flaskr.backend.Backend.get_all_page_names",
-               return_value=["dumbarton"]):
-        resp = client.get("/pages/dumbarton")
-        html_content = resp.data.decode('utf-8')
-        start_tag = html_content.find('<h1 id="element"')
+    with patch("flaskr.backend.Backend.identify_wiki_page_content", return_value=["Page", "content", "test", "Link:", "TestLink"]):
+        with patch("flaskr.backend.Backend.get_wiki_page", return_value=("Page content test", "TestLink")):
+            resp = client.get("/pages/dumbarton")
+            html_content = resp.data.decode('utf-8')
+            start_tag = html_content.find('<h1 id="element"')
 
-        assert start_tag != -1
+            assert start_tag != -1
 
 
-def test_wiki_page_Financial_experience_1(client, monkeypatch):
+def test_wiki_page_Financial_experience_1(client):
     '''Test if Financial experience is not being displayed'''
-    # Set up mock objects
-    mock_blob = google.cloud.storage.Blob(name='test-blob', bucket=None)
-    mock_credentials = Credentials.from_authorized_user_info(info=info)
-    monkeypatch.setattr(google.auth, 'default', lambda: mock_credentials)
+    with patch("flaskr.backend.Backend.identify_wiki_page_content", return_value=["Page", "content", "test"]):
+        with patch("flaskr.backend.Backend.get_wiki_page", return_value=("Page content test", "")):
+            resp = client.get("/pages/test")
+            assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
 
-    # Set up mock client and bucket to return mock_blob
-    mock_client = mock.Mock()
-    mock_storage_client = mock.Mock()
-    mock_bucket = google.cloud.storage.Bucket(name='test-bucket', client=mock_client)
-    mock_bucket.blob = mock.Mock(return_value=mock_blob)
-    mock_storage_client.bucket = mock.Mock(return_value=mock_bucket)
-    monkeypatch.setattr(google.cloud.storage, 'Client', lambda: mock_storage_client)
-
-    # Set up mock blob to return test content
-    mock_page_content = b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>'
-    mock_download_as_bytes = mock.Mock(return_value=mock_page_content)
-    mock_blob.download_as_bytes = mock_download_as_bytes
-
-    # Make the request and test the response
-    with patch("flaskr.backend.Backend.get_all_page_names",
-               return_value=["test"]):
-        resp = client.get("/pages/test")
-        assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
 
 def mock_sign_in():
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
