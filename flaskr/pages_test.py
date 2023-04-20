@@ -32,7 +32,7 @@ def test_home_page(client):
 # TODO(Project 1): Write tests for other routes.
 #assert resp.data == b"<h1>hello world></h1>"
 def test_signup(client):
-    '''Test if sign up html elements are being displayed correctly'''
+    """Test if sign up html elements are being displayed correctly"""
     resp = client.get("/signup")
     assert resp.status_code == 200
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign Up</h1>' in resp.data
@@ -44,7 +44,7 @@ def test_signup(client):
 
 
 def test_signin(client):
-    '''Test if sign in html elements are being displayed correctly'''
+    """Test if sign in html elements are being displayed correctly"""
     resp = client.get("/signin")
     assert resp.status_code == 200
     assert b'<h1 style="font-size: 6; color: rgb(0, 4, 255);">Sign In</h1>' in resp.data
@@ -56,7 +56,7 @@ def test_signin(client):
 
 
 def test_upload(client):
-    '''Test if upload html elements are being displayed correctly'''
+    """Test if upload html elements are being displayed correctly"""
     resp = client.get("/upload")
     assert resp.status_code == 200
     assert b'<h1>Upload new File</h1>' in resp.data
@@ -66,7 +66,7 @@ def test_upload(client):
 
 
 def test_signout(client):
-    '''Test if user is logged out succesfully'''
+    """Test if user is logged out succesfully"""
     resp = client.get("/logout")
     assert b'<a href="" class="w3-bar-item w3-button w3-hide-small w3-hover-white">{{sent_user_name}}</a>' not in resp.data
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
@@ -166,7 +166,7 @@ def test_wiki_page_Google_Map(client):
 
 
 def test_wiki_page_Google_Map_1(client, monkeypatch):
-    '''Test if Google Map snapshot is not being displayed'''
+    """Test if Google Map snapshot is not being displayed"""
     with patch("flaskr.backend.Backend.identify_wiki_page_content",
                return_value=["Page", "content", "test"]):
         with patch("flaskr.backend.Backend.get_wiki_page",
@@ -176,7 +176,7 @@ def test_wiki_page_Google_Map_1(client, monkeypatch):
 
 
 def test_wiki_page_Financial_experience(client):
-    '''Test if Financial experience is being displayed correctly'''
+    """Test if Financial experience is being displayed correctly"""
     # Make the request and test the response
     with patch("flaskr.backend.Backend.identify_wiki_page_content",
                return_value=["Page", "content", "test", "Link:", "TestLink"]):
@@ -190,7 +190,7 @@ def test_wiki_page_Financial_experience(client):
 
 
 def test_wiki_page_Financial_experience_1(client):
-    '''Test if Financial experience is not being displayed'''
+    """Test if Financial experience is not being displayed"""
     with patch("flaskr.backend.Backend.identify_wiki_page_content",
                return_value=["Page", "content", "test"]):
         with patch("flaskr.backend.Backend.get_wiki_page",
@@ -205,7 +205,7 @@ def mock_sign_in():
 
 
 def test_signin_successful(app, client):
-    '''Test if User is being verified'''
+    """Test if User is being verified"""
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         mock_sign_in.return_value = True
         response = client.post('/signin',

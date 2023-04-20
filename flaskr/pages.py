@@ -61,7 +61,7 @@ def make_endpoints(app):
 
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
-        '''Gets the user input and checks with the backend if the username with password matches'''
+        """Gets the user input and checks with the backend if the username with password matches"""
         if session.get('loggedin', False) == True:
             return redirect(url_for('home'))
         message = None
@@ -86,7 +86,7 @@ def make_endpoints(app):
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
-        '''Gets the user input and sends it to the backend to register the user'''
+        """Gets the user input and sends it to the backend to register the user"""
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']
@@ -112,8 +112,6 @@ def make_endpoints(app):
     def page(page_name):
         final_page_name = page_name + ".txt"
         curr_page_content = my_backend.get_wiki_page(final_page_name)
-        print(curr_page_content,
-              "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
         #changed parameters to get page content from tuple
         return render_template(

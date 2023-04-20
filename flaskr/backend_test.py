@@ -7,7 +7,7 @@ import hashlib
 
 @pytest.fixture
 def backend():
-    "Creates a backend instance and mocks the content and user bucket"
+    """Creates a backend instance and mocks the content and user bucket"""
     backend = Backend()
     backend.content_bucket = MagicMock()
     backend.user_bucket = MagicMock()
@@ -32,7 +32,7 @@ def backend():
 
 
 def test_get_wiki_page(backend):
-    '''Check if the function get the text and the link in two separated variables in a tuple'''
+    """Check if the function get the text and the link in two separated variables in a tuple"""
     # Set up mock objects
     backend.content_bucket = MagicMock()
     mock_blob = MagicMock()

@@ -18,8 +18,8 @@ class Backend:
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
     def identify_wiki_page_content(self, page_name):
-        '''Gets the content of a wiki page from the content bucket 
-        with the specified name returns Content of the wiki page as a list of words'''
+        """Gets the content of a wiki page from the content bucket 
+        with the specified name returns Content of the wiki page as a list of words"""
         specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
@@ -33,11 +33,12 @@ class Backend:
         content = self.identify_wiki_page_content(page_name)
         Description = ''
         link = ''
+        LINK_PREFIX_LEN = 5
         track = 0
         for word in content:
-            if word[0:5] == "Link:":
-                if len(word) > 5 and track + 1 >= len(content):
-                    link = word[5:]
+            if word[0:LINK_PREFIX_LEN] == "Link:":
+                if len(word) > LINK_PREFIX_LEN and track + 1 >= len(content):
+                    link = word[LINK_PREFIX_LEN:]
                 else:
                     link = content[track + 1]
                 break
