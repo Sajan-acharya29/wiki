@@ -1,6 +1,7 @@
 from flaskr import create_app
 from flask import session
 from unittest.mock import patch
+from unittest.mock import MagicMock
 import io
 import pytest
 from werkzeug.datastructures import FileStorage
@@ -155,12 +156,13 @@ def test_home_page1(client):
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
 
 
-def test_wiki_page_Google_Map(client):
+def test_wiki_page_Google_Map(client, monkeypatch):
     """Test if Google Map snapshot is being displayed"""
-    with patch("google.cloud.storage.Client"):
-        with patch("flaskr.backend.Backend.get_all_page_names", return_value=["dumbarton"]):
-            resp = client.get("/pages/dumbarton")
-            assert b'<iframe src=https://www.google.com/maps/embed?pb=' in resp.data
+    mocked_function = MagicMock(return_value=b'<iframe src=https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3104.430007084699!2d-77.06620158467243!3d38.914147979568156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7b63132dc7317%3A0xc226e57a90b4dbd7!2sDumbarton%20Oaks%20Museum!5e0!3m2!1sen!2sus!4v1681009088373!5m2!1sen!2sus id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>')
+    monkeypatch.setattr('flaskr.backend.Backend.get_all_page_names', mocked_function)
+    
+    resp = client.get("/pages/dumbarton")
+    assert b'<iframe src=https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3104.430007084699!2d-77.06620158467243!3d38.914147979568156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7b63132dc7317%3A0xc226e57a90b4dbd7!2sDumbarton%20Oaks%20Museum!5e0!3m2!1sen!2sus!4v1681009088373!5m2!1sen!2sus id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>' in resp.data
 
 def test_wiki_page_Google_Map_1(client):
     '''Test if Google Map snapshot is not being displayed'''
