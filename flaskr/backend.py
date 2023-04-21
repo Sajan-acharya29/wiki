@@ -98,10 +98,11 @@ class Backend:
         image_bytes = blob.download_as_bytes()
         return image_bytes
 
-    def identify_wiki_page_content(self, page_name): 
+    def identify_wiki_page_content(self, page_name):
         '''Gets the content of a wiki page from the content bucket 
         with the specified name returns Content of the wiki page as a list of words'''
-        specified_page = self.content_bucket.blob(page_name)     
+        specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text().split()    #return a list of all the words. 
+        return specified_page.download_as_text().split(
+        )  #return a list of all the words.
