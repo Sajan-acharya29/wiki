@@ -71,7 +71,7 @@ def make_endpoints(app):
             if my_backend.sign_up(username, password):
                 return render_template("login_succesfull.html")
         return render_template("signup.html")
-        
+
     @app.route('/about')
     def about():
         # first_image_bytes = my.get_image("cameron.jpeg")
