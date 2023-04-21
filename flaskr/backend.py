@@ -31,12 +31,14 @@ class Backend:
         """returns names of all wiki pages or txt files user upload in the content bucket."""
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="")
+        REVIEW_PREFIX_LEN = 7
+        FINANCE_PREFIX_LEN = 9
         for blob in blobs:
             if blob.name.endswith(
                     ".txt"
-            ) and blob.name[0:7] != "review_" and blob.name[
+            ) and blob.name[0:REVIEW_PREFIX_LEN] != "review_" and blob.name[
                     0:
-                    9] != "finances_":  #just to show the pages instead of reviews
+                    FINANCE_PREFIX_LEN] != "finances_":  #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
@@ -116,45 +118,3 @@ class Backend:
         )  #adds the new finances information to the old list with the unique connecter string added to the end.
         blob.upload_from_string(updated_finance_answers)
         return "Successfully Uploaded"
-
-
-##checking if cameron's feature r2 works or not.
-# my = Backend()
-# page_name = "sajan_file_testing"
-# answers = "flight:200, housing: 300"
-# verified = True
-# added = my.upload_finances_answers(page_name, answers, verified)
-# print(added)
-
-# get_page_names = my.get_all_page_names()
-# print(get_page_names)
-# get_page = my.get_wiki_page(get_page_names[0])
-# print(get_page)
-
-# get_page = my.get_wiki_page("greet.html")
-# print(get_page)
-
-#uploads file
-# file = open("check_file.txt")
-# my.upload("check_file.txt", file)
-# print("completed upload")
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_up(name, password))
-# #added sajan.
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_in(name, password))
-# #returns true as user is signed in succesfully
-
-# name = "sajan"
-# password = "test1012"
-# print(my.sign_in(name, password))
-#returns False and error as user is not signed in succesfully
-
-# image_bytes = my.get_image("img2.jpeg")
-# with Image.open(io.BytesIO(image_bytes)) as img:
-#     img.save("downloaded_img_file.jpeg")
-# saves the image file into the current directory.

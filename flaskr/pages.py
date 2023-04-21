@@ -16,16 +16,6 @@ def make_endpoints(app):
         greetings = "Welcome To Brainiacs"
         return render_template("main.html", greetings=greetings)
 
-    # @app.route('/about')
-    # def about():
-    #     # first_image_bytes = my.get_image("cameron.jpeg")
-    #     # with Image.open(io.BytesIO(first_image_bytes)) as img:
-    #     #     img.save("downloaded_img_file.jpeg")
-    #     # saves the image file into the current directory.
-    #     return render_template("about.html")
-
-    # TODO(Project 1): Implement additional routes according to the project requirements.
-
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         """checks the extension and uploads valid files to the content bucket"""
@@ -78,15 +68,10 @@ def make_endpoints(app):
             print("function calleeddd")
             username = request.form['username']
             password = request.form['password']
-            # with open("text_file.txt", "w") as file:
-            #     file.write(f'{username}, {password} this is the returned register details')
             if my_backend.sign_up(username, password):
                 return render_template("login_succesfull.html")
-
         return render_template("signup.html")
-
-    #this is camerons
-
+        
     @app.route('/about')
     def about():
         # first_image_bytes = my.get_image("cameron.jpeg")
@@ -99,8 +84,6 @@ def make_endpoints(app):
     def page(page_name):
         final_page_name = page_name + ".txt"
         curr_page_content = my_backend.get_wiki_page(final_page_name)
-        print(curr_page_content,
-              "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         return render_template("wiki_page.html",
                                page_name=final_page_name,
                                page_content=curr_page_content)
