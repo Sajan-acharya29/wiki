@@ -32,7 +32,11 @@ class Backend:
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
-            if blob.name.endswith(".txt") and blob.name[0:7] != "review_" and blob.name[0:9] != "finances_" :       #just to show the pages instead of reviews
+            if blob.name.endswith(
+                    ".txt"
+            ) and blob.name[0:7] != "review_" and blob.name[
+                    0:
+                    9] != "finances_":  #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
@@ -90,35 +94,37 @@ class Backend:
         image_bytes = blob.download_as_bytes()
         return image_bytes
 
-
     #this is cameron's r2 implemented by sajan
     def store_finances_answers(self, page_name, answers, verified):
         """uploads the finance answers to bucket and return Successfully Uploaded if user has been verified else returns 'Please log in'"""
         if not verified:
             return "Please log in"
 
-        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"    #this becomes the connector of the finances info. so we can seperate finances answers based on this.
-        finance_answers_txt_file = f"finances_{page_name}.txt"        
+        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the finances info. so we can seperate finances answers based on this.
+        finance_answers_txt_file = f"finances_{page_name}.txt"
         blob = self.content_bucket.blob(finance_answers_txt_file)
         if blob.exists():
-          old_finances_text = blob.download_as_text()
-          old_finances_answers_list = old_finances_text.split(unique_finance_answers_connector)
+            old_finances_text = blob.download_as_text()
+            old_finances_answers_list = old_finances_text.split(
+                unique_finance_answers_connector)
         else:
-          old_finances_answers_list = []
+            old_finances_answers_list = []
         new_finance_answer = answers
         old_finances_answers_list.append(new_finance_answer)
-        updated_finance_answers = unique_finance_answers_connector.join(old_finances_answers_list)   #adds the new finances information to the old list with the unique connecter string added to the end.
+        updated_finance_answers = unique_finance_answers_connector.join(
+            old_finances_answers_list
+        )  #adds the new finances information to the old list with the unique connecter string added to the end.
         blob.upload_from_string(updated_finance_answers)
         return "Successfully Uploaded"
+
 
 ##checking if cameron's feature r2 works or not.
 # my = Backend()
 # page_name = "sajan_file_testing"
-# answers = "flight:200, housing: 300" 
+# answers = "flight:200, housing: 300"
 # verified = True
 # added = my.upload_finances_answers(page_name, answers, verified)
 # print(added)
-
 
 # get_page_names = my.get_all_page_names()
 # print(get_page_names)

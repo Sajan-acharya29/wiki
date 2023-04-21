@@ -265,29 +265,33 @@ def test_get_image_if_image_not_found(backend):
 def test_store_finances_answers_if_user_verified(backend):
     """tests if the store finances method returns 'Successfully Uploaded' if the user has been verified"""
     mock_page_name = "test_page"
-    mock_answer = "flight:200, housing: 300" 
+    mock_answer = "flight:200, housing: 300"
     mock_verified = True
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
     backend.content_bucket.blob.return_value = mock_blob
-    result = backend.store_finances_answers(mock_page_name, mock_answer, mock_verified)
+    result = backend.store_finances_answers(mock_page_name, mock_answer,
+                                            mock_verified)
     assert result == "Successfully Uploaded"
+
 
 def test_store_finances_answers_if_user_not_verified(backend):
     """tests if the store finances method returns 'Please log in' if the user has been verified"""
     mock_page_name = "test_page"
-    mock_answer = "flight:200, housing: 300" 
+    mock_answer = "flight:200, housing: 300"
     mock_verified = False
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
     backend.content_bucket.blob.return_value = mock_blob
-    result = backend.store_finances_answers(mock_page_name, mock_answer, mock_verified)
+    result = backend.store_finances_answers(mock_page_name, mock_answer,
+                                            mock_verified)
     assert result == "Please log in"
+
 
 def test_store_finances_answers_if_old_answers_not_present(backend):
     """tests if the store finances method uploads the answers to new file finances_page_name if old answers are not present in the bucket"""
     mock_page_name = "test_page"
-    mock_answer = "flight:200, housing: 300" 
+    mock_answer = "flight:200, housing: 300"
     mock_verified = True
     mock_blob = MagicMock()
     mock_blob.exists.return_value = False
@@ -297,32 +301,39 @@ def test_store_finances_answers_if_old_answers_not_present(backend):
     old_finances_stored_file = f"finances_{mock_page_name}.txt"
     expected_answers = mock_answer
     mock_blob.upload_from_string.assert_called_once_with(expected_answers)
-    backend.content_bucket.blob.assert_called_once_with(old_finances_stored_file)
-    curr_stored_reviews = mock_blob.upload_from_string.call_args[0][0]   # call args is a tuple of tuple  
-    returned_answers = curr_stored_reviews 
+    backend.content_bucket.blob.assert_called_once_with(
+        old_finances_stored_file)
+    curr_stored_reviews = mock_blob.upload_from_string.call_args[0][
+        0]  # call args is a tuple of tuple
+    returned_answers = curr_stored_reviews
     assert expected_answers == returned_answers
+
 
 def test_store_finances_answers_if_old_answers_present(backend):
     """tests if the store finances method uploads the current answers to old file by combining the old answers with the current answer to the finances_pagename file"""
     mock_page_name = "test_page"
-    mock_answer = "flight:200, housing: 300" 
+    mock_answer = "flight:200, housing: 300"
     mock_verified = True
     mock_blob = MagicMock()
     mock_blob.exists.return_value = True
-    
-    unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%" 
+
+    unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"
     old_mock_reviews = f'answer1{unique_finance_answers_connector}answer2{unique_finance_answers_connector}answer3{unique_finance_answers_connector}answer4'
 
-    mock_blob.download_as_text.return_value =  old_mock_reviews 
+    mock_blob.download_as_text.return_value = old_mock_reviews
     backend.content_bucket.blob.return_value = mock_blob
 
     backend.store_finances_answers(mock_page_name, mock_answer, mock_verified)
     expected_answers = ["answer1", "answer2", "answer3", "answer4", mock_answer]
 
     old_finances_stored_file = f"finances_{mock_page_name}.txt"
-    connector_added_answer= unique_finance_answers_connector.join(expected_answers)
+    connector_added_answer = unique_finance_answers_connector.join(
+        expected_answers)
     mock_blob.upload_from_string.assert_called_once_with(connector_added_answer)
-    backend.content_bucket.blob.assert_called_once_with(old_finances_stored_file)
-    current_uploaded_string = mock_blob.upload_from_string.call_args[0][0]   # call args is a tuple of tuple  
-    returned_answers = current_uploaded_string.split(unique_finance_answers_connector)
+    backend.content_bucket.blob.assert_called_once_with(
+        old_finances_stored_file)
+    current_uploaded_string = mock_blob.upload_from_string.call_args[0][
+        0]  # call args is a tuple of tuple
+    returned_answers = current_uploaded_string.split(
+        unique_finance_answers_connector)
     assert expected_answers == returned_answers
