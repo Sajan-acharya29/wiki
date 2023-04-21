@@ -27,14 +27,6 @@ class Backend:
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
 
-    # def get_all_page_names(self):
-    #     """returns names of all wiki pages or txt files user upload in the content bucket."""
-    #     all_pages_list = []
-    #     blobs = self.content_bucket.list_blobs(prefix="") 
-    #     for  blob in blobs:
-    #         if blob.name.endswith(".txt"):
-    #             all_pages_list.append(blob.name)
-    #     return all_pages_list
     def get_all_page_names(self):
         """returns names of all wiki pages or txt files user upload in the content bucket."""
         all_pages_list = []
@@ -101,7 +93,7 @@ class Backend:
         if not verified:
             return "Please log in"
 
-        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"    #this becomes the connector of the finances info. so we can seperate finances answers based on this.
+        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"    
         finance_answers_txt_file = f"finances_{page_name}.txt"        
         blob = self.content_bucket.blob(finance_answers_txt_file)
         if blob.exists():
@@ -111,7 +103,7 @@ class Backend:
           old_finances_answers_list = []
         new_finance_answer = answers
         old_finances_answers_list.append(new_finance_answer)
-        updated_finance_answers = unique_finance_answers_connector.join(old_finances_answers_list)   #adds the new finances information to the old list with the unique connecter string added to the end.
+        updated_finance_answers = unique_finance_answers_connector.join(old_finances_answers_list)  
         blob.upload_from_string(updated_finance_answers)
         return "Successfully Uploaded"
 
@@ -122,43 +114,4 @@ class Backend:
         return "Review Uploaded"
 
 
-my = Backend()
-page_name = "test_upload_cam2"
-review = "This is a good page. Test2" 
-added = my.store_review(page_name, review)
-print(added)
-
-
-# get_page_names = my.get_all_page_names()
-# print(get_page_names)
-# get_page = my.get_wiki_page(get_page_names[0])
-# print(get_page)
-
-# get_page = my.get_wiki_page("greet.html")
-# print(get_page)
-
-#uploads file
-# file = open("check_file.txt")
-# my.upload("check_file.txt", file)
-# print("completed upload")
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_up(name, password))
-# #added sajan.
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_in(name, password))
-# #returns true as user is signed in succesfully
-
-# name = "sajan"
-# password = "test1012"
-# print(my.sign_in(name, password))
-#returns False and error as user is not signed in succesfully
-
-# image_bytes = my.get_image("img2.jpeg")
-# with Image.open(io.BytesIO(image_bytes)) as img:
-#     img.save("downloaded_img_file.jpeg")
-# saves the image file into the current directory.
 
