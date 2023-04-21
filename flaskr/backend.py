@@ -4,7 +4,6 @@ import hashlib
 from flask import send_file
 import io
 import sys
-from PIL import Image
 
 
 class Backend:
