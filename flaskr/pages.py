@@ -16,6 +16,11 @@ def make_endpoints(app):
         greetings = "Welcome To Brainiacs"
         return render_template("main.html", greetings=greetings)
 
+    # TODO(Project 1): Implement additional routes according to the project requirements.
+
+    ALLOWED_EXTENSIONS = {
+        'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'
+    }
     # @app.route('/about')
     # def about():
     #     # first_image_bytes = my.get_image("cameron.jpeg")
@@ -114,3 +119,40 @@ def make_endpoints(app):
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
         return redirect("/")
+
+    @app.route("/signup")
+    def sing_up():
+        return render_template("Sing_Up.html")
+
+    @app.route("/login")
+    def login():
+        return render_template("Login.html")
+
+    @app.route("/finances", methods=['GET', 'POST'])
+    def finances():
+        if request.method == 'POST':
+            page_name = request.form['page_name']
+            answers = request.form['answers']
+            # with open("text_file.txt", "w") as file:
+            #     file.write(f'{username}, {password} this is the returned register details')
+            if my_backend.store_finances_answers(page_name, answers, True):
+                return render_template("finances.html")
+        return render_template("finances.html")
+
+    @app.route("/loginsuccesful", methods=['GET', 'POST'])
+    def submit_login():
+        #if Backend determines it can login <--------------------------------------------------------------------Important
+        if request.method == 'POST':
+            username = request.form['Username']
+            password = hash = hashlib.blake2b(
+                request.form['Password'].encode()).hexdigest()
+        return render_template("Succesful.html", LogorSing='Login')
+
+    @app.route("/Singsuccesful", methods=['GET', 'POST'])
+    def submit_sing():
+        #if Backend determines it can login <--------------------------------------------------------------------Important
+        if request.method == 'POST':
+            username = request.form['Username']
+            password = hash = hashlib.blake2b(
+                request.form['Password'].encode()).hexdigest()
+        return render_template("Succesful.html", LogorSing='Sing Up')
