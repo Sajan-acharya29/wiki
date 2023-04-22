@@ -90,24 +90,3 @@ class Backend:
         image_bytes = blob.download_as_bytes()
         return image_bytes
 
-    def store_finances_answers(self, page_name, answers, verified):
-        if not verified:
-            return "Please log in"
-
-        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023"
-        finance_answers_txt_file = f"finances_{page_name}.txt"
-        blob = self.content_bucket.blob(finance_answers_txt_file)
-        if blob.exists():
-            old_finances_text = blob.download_as_text()
-            old_finances_answers_list = old_finances_text.split(
-                unique_finance_answers_connector)
-
-        else:
-            old_finances_answers_list = []
-        new_finance_answer = answers
-        old_finances_answers_list.append(new_finance_answer)
-        updated_finance_answers = unique_finance_answers_connector.join(
-            old_finances_answers_list)
-        blob.upload_from_string(updated_finance_answers)
-        return "Successfully Uploaded"
-
