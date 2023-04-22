@@ -6,10 +6,34 @@
     <br>
     <br>
     <br>
-   
     <br>
     <br>
     <br>
      {{ page_content }}   
      <!-- we will get the content from the pages para route. -->
+    <br>
+    <br>
+    <br>
+    <!-- This div can move the Google snapshot and text below -->
+    <div>
+        <!-- Display the Google Maps snapshot -->
+        {% if page_link != '' %}
+            <iframe src={{page_link}} id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        {% endif %}
+
+        <style>
+        #element {
+            width:20%;
+            height:20px;
+            background-color:#FFFFFF;
+            border:5px solid;
+            border-style: solid;
+            border-color: black;
+          }
+        </style>
+        <!-- Change this if statement -->
+        {% if Variable_to_store_the_financial_experience != None %}
+            <h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>
+        {% endif %}
+    </div>
 {% endblock content %} 

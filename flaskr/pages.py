@@ -1,5 +1,6 @@
 from flask import Flask, flash, request, redirect, url_for, render_template
 from flaskr.backend import Backend
+from flask import session
 
 
 def make_endpoints(app):
@@ -63,22 +64,34 @@ def make_endpoints(app):
                                        message="wrong format file")
         return render_template("upload.html")
 
-    # this is just for the checking purpose.
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
-        if request.method == 'POST':
-            print("function calleeddd")
+        """Gets the user input and checks with the backend if the username with password matches"""
+        if session.get('loggedin', False) == True:
+            return redirect(url_for('home'))
+        message = None
+        if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
             username = request.form['username']
             password = request.form['password']
 
-            if my_backend.sign_in(username, password):
+            if my_backend.sign_in(username,
+                                  password):  # True if sign up is successful
+                session['loggedin'] = True
+                session['username'] = username
+
+                if "page_to_redirect" in session:
+                    redirect_page = session.pop("page_to_redirect")
+                    return redirect(redirect_page)
                 return render_template("main.html",
                                        sent_user_name=username,
                                        signed_in=True)
-        return render_template("signin.html")
+            else:
+                message = "Incorrect username or password"
+        return render_template("signin.html", message=message)
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
+        """Gets the user input and sends it to the backend to register the user"""
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']
@@ -100,17 +113,20 @@ def make_endpoints(app):
         # saves the image file into the current directory.
         return render_template("about.html")
 
-    @app.route('/pages/<page_name>')
+    @app.route('/pages/<page_name>', methods=['GET', 'POST'])
     def page(page_name):
         final_page_name = page_name + ".txt"
         curr_page_content = my_backend.get_wiki_page(final_page_name)
-        print(curr_page_content,
-              "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        return render_template("wiki_page.html",
-                               page_name=final_page_name,
-                               page_content=curr_page_content)
 
-    @app.route('/pages')
+        #changed parameters to get page content from tuple
+        return render_template(
+            "wiki_page.html",
+            page_name=final_page_name,
+            page_content=curr_page_content[0],
+            page_link=curr_page_content[1],
+            Variable_to_store_the_financial_experience='$1200')
+
+    @app.route('/pages', methods=['GET', 'POST'])
     def pages():
         """gets the page names from bucket and passes it to """
         all_page_names = my_backend.get_all_page_names()

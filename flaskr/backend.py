@@ -17,15 +17,35 @@ class Backend:
         self.content_bucket = self.client.bucket(self.content_bucket_name)
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
-    def get_wiki_page(self, page_name):
-        """
-        Gets the content of a wiki page from the content bucket with the specified name
-        returns Content of the wiki page, or None if the page does not exist.
-        """
+    def identify_wiki_page_content(self, page_name):
+        """Gets the content of a wiki page from the content bucket 
+        with the specified name returns Content of the wiki page as a list of words"""
         specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text()
+        return specified_page.download_as_text().split(
+        )  #return a list of all the words.
+
+        return specified_page.download_as_text().split()
+
+    def get_wiki_page(self, page_name):
+        """Get the text description and link of the place in two separated variables and return it as a Tuple"""
+        content = self.identify_wiki_page_content(page_name)
+        Description = ''
+        link = ''
+        LINK_PREFIX_LEN = 5
+        track = 0
+        for word in content:
+            if word[0:LINK_PREFIX_LEN] == "Link:":
+                if len(word) > LINK_PREFIX_LEN and track + 1 >= len(content):
+                    link = word[LINK_PREFIX_LEN:]
+                else:
+                    link = content[track + 1]
+                break
+            Description += ' ' + word
+            track += 1
+
+        return ("".join(Description), link)
 
     def get_all_page_names(self):
         """returns names of all wiki pages or txt files user upload in the content bucket."""
