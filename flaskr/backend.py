@@ -17,7 +17,16 @@ class Backend:
         self.content_bucket = self.client.bucket(self.content_bucket_name)
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
-    def get_wiki_page(self, page_name):
+    def identify_wiki_page_content(self, page_name):
+        """Gets the content of a wiki page from the content bucket 
+        with the specified name returns Content of the wiki page as a list of words"""
+        specified_page = self.content_bucket.blob(page_name)
+        if not specified_page.exists():
+            return f"Erorr: The page {page_name} does not exists in the bucket."
+        return specified_page.download_as_text().split(
+        )  #return a list of all the words.
+        
+    def get_wiki_page_old(self, page_name):
         """
         Gets the content of a wiki page from the content bucket with the specified name
         returns Content of the wiki page, or None if the page does not exist.
@@ -26,6 +35,26 @@ class Backend:
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
+
+
+    def get_wiki_page(self, page_name):
+        """Get the text description and link of the place in two separated variables and return it as a Tuple"""
+        content = self.identify_wiki_page_content(page_name)
+        Description = ''
+        link = ''
+        LINK_PREFIX_LEN = 5
+        track = 0
+        for word in content:
+            if word[0:LINK_PREFIX_LEN] == "Link:":
+                if len(word) > LINK_PREFIX_LEN and track + 1 >= len(content):
+                    link = word[LINK_PREFIX_LEN:]
+                else:
+                    link = content[track + 1]
+                break
+            Description += ' ' + word
+            track += 1
+
+        return ("".join(Description), link)
 
     def get_all_page_names(self):
         """
@@ -36,6 +65,8 @@ class Backend:
         REVIEW_PREFIX_LEN = 7
         FINANCE_PREFIX_LEN = 9
         blobs = self.content_bucket.list_blobs(prefix="")
+        REVIEW_PREFIX_LEN = 7
+        FINANCE_PREFIX_LEN = 9
         for blob in blobs:
             if blob.name.endswith(
                     ".txt"
@@ -61,14 +92,14 @@ class Backend:
         site_secret = "brainiacs_password"
         blob = self.user_bucket.blob(username)
         if blob.exists():
-            return False  #User already exists  so returns False
+            return False
 
         password_with_salt = f"{username}{site_secret}{password}"
         hashed_password = hashlib.blake2b(
-            password_with_salt.encode()).hexdigest()  #returns a str objects
+            password_with_salt.encode()).hexdigest()
         curr_user_details = username + ":" + hashed_password
         blob.upload_from_string(curr_user_details)
-        return True  # User added successfully
+        return True
 
     def sign_in(self, username, password):
         """
@@ -77,9 +108,9 @@ class Backend:
         """
         blob = self.user_bucket.blob(username)
         if not blob.exists():
-            return False  #User does not exist
-        curr_user_details = blob.download_as_text(
-        )  #downloads : "sajan:testpassword"
+            return False
+
+        curr_user_details = blob.download_as_text()
         stored_user_password = curr_user_details.split(":")[1]
 
         site_secret = "brainiacs_password"
@@ -87,8 +118,8 @@ class Backend:
         hashed_password = hashlib.blake2b(
             password_with_salt.encode()).hexdigest()
         if hashed_password == stored_user_password:
-            return True  #signed in successfully
-        return False  #wrong password
+            return True
+        return False
 
     def get_image(self, image_name):
         """
@@ -135,3 +166,25 @@ class Backend:
             return review_data_list
         else:
             return []
+    #this is cameron's r2 implemented by sajan
+    def store_finances_answers(self, page_name, answers, verified):
+        """uploads the finance answers to bucket and return Successfully Uploaded if user has been verified else returns 'Please log in'"""
+        if not verified:
+            return "Please log in"
+
+        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the finances info. so we can seperate finances answers based on this.
+        finance_answers_txt_file = f"finances_{page_name}.txt"
+        blob = self.content_bucket.blob(finance_answers_txt_file)
+        if blob.exists():
+            old_finances_text = blob.download_as_text()
+            old_finances_answers_list = old_finances_text.split(
+                unique_finance_answers_connector)
+        else:
+            old_finances_answers_list = []
+        new_finance_answer = answers
+        old_finances_answers_list.append(new_finance_answer)
+        updated_finance_answers = unique_finance_answers_connector.join(
+            old_finances_answers_list
+        )  #adds the new finances information to the old list with the unique connecter string added to the end.
+        blob.upload_from_string(updated_finance_answers)
+        return "Successfully Uploaded"

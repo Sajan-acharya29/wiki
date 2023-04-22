@@ -10,14 +10,13 @@ def backend():
     """
     Creates a backend instance and mocks the content and user bucket
     """
-
     backend = Backend()
     backend.content_bucket = MagicMock()
     backend.user_bucket = MagicMock()
     return backend
 
 
-def test_get_wiki_page_if_page_found(backend):
+def test_get_wiki_page_old_if_page_found(backend):
     """
     Checks if the get_wiki_page method returns correct text for an existing specified txt file
     """
@@ -32,11 +31,27 @@ def test_get_wiki_page_if_page_found(backend):
     curr_page_blob = backend.content_bucket.blob(mock_page_name)
     curr_page_blob.upload_from_string(mock_page_content)
 
-    recieved_text = backend.get_wiki_page(mock_page_name)
+    recieved_text = backend.get_wiki_page_old(mock_page_name)
     assert recieved_text == curr_page_blob.download_as_text()
 
 
-def test_get_wiki_page_if_page_not_found(backend):
+def test_get_wiki_page(backend):
+    """Check if the function get the text and the link in two separated variables in a tuple"""
+    # Set up mock objects
+    backend.content_bucket = MagicMock()
+    mock_blob = MagicMock()
+    backend.content_bucket.blob.return_value = mock_blob
+
+    # Set up mock blob to return test content
+    mock_page_name = "test_page.txt"
+    mock_page_content = "Test content Link: Testlink.com"
+    mock_blob.download_as_text.return_value = mock_page_content
+
+    assert backend.get_wiki_page(mock_page_name) == (" Test content",
+                                                     "Testlink.com")
+
+
+def test_get_wiki_page_old_if_page_not_found(backend):
     """
     Checks if the get_wiki_page method returns error for a specific txt file not present in the bucket
     """
@@ -45,9 +60,8 @@ def test_get_wiki_page_if_page_not_found(backend):
     mock_blob = MagicMock()
     mock_blob.exists.return_value = False
     backend.content_bucket.blob.return_value = mock_blob
-
     expected_error = f"Erorr: The page {unavilable_page} does not exists in the bucket."
-    recieved_error = backend.get_wiki_page(unavilable_page)
+    recieved_error = backend.get_wiki_page_old(unavilable_page)
     assert expected_error == recieved_error
 
 
@@ -378,3 +392,108 @@ def test_get_reviews_if_old_reviews_present(backend):
     ]
     recieved_review_from_buckets = backend.get_reviews(mock_page_name)
     assert recieved_review_from_buckets == expected_reviews
+#test for cameron's r2 feature.
+def test_store_finances_answers_if_user_verified(backend):
+    """tests if the store finances method returns 'Successfully Uploaded' if the user has been verified"""
+    mock_page_name = "test_page"
+    mock_answer = "flight:200, housing: 300"
+    mock_verified = True
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    backend.content_bucket.blob.return_value = mock_blob
+    result = backend.store_finances_answers(mock_page_name, mock_answer,
+                                            mock_verified)
+    assert result == "Successfully Uploaded"
+
+
+def test_store_finances_answers_if_user_not_verified(backend):
+    """tests if the store finances method returns 'Please log in' if the user has been verified"""
+    mock_page_name = "test_page"
+    mock_answer = "flight:200, housing: 300"
+    mock_verified = False
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    backend.content_bucket.blob.return_value = mock_blob
+    result = backend.store_finances_answers(mock_page_name, mock_answer,
+                                            mock_verified)
+    assert result == "Please log in"
+
+
+def test_store_finances_answers_if_old_answers_not_present(backend):
+    """tests if the store finances method uploads the answers to new file finances_page_name if old answers are not present in the bucket"""
+    mock_page_name = "test_page"
+    mock_answer = "flight:200, housing: 300"
+    mock_verified = True
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = False
+    backend.content_bucket.blob.return_value = mock_blob
+    backend.store_finances_answers(mock_page_name, mock_answer, mock_verified)
+
+    old_finances_stored_file = f"finances_{mock_page_name}.txt"
+    expected_answers = mock_answer
+    mock_blob.upload_from_string.assert_called_once_with(expected_answers)
+    backend.content_bucket.blob.assert_called_once_with(
+        old_finances_stored_file)
+    curr_stored_reviews = mock_blob.upload_from_string.call_args[0][
+        0]  # call args is a tuple of tuple
+    returned_answers = curr_stored_reviews
+    assert expected_answers == returned_answers
+
+
+def test_store_finances_answers_if_old_answers_present(backend):
+    """tests if the store finances method uploads the current answers to old file by combining the old answers with the current answer to the finances_pagename file"""
+    mock_page_name = "test_page"
+    mock_answer = "flight:200, housing: 300"
+    mock_verified = True
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+
+    unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"
+    old_mock_reviews = f'answer1{unique_finance_answers_connector}answer2{unique_finance_answers_connector}answer3{unique_finance_answers_connector}answer4'
+
+    mock_blob.download_as_text.return_value = old_mock_reviews
+    backend.content_bucket.blob.return_value = mock_blob
+
+    backend.store_finances_answers(mock_page_name, mock_answer, mock_verified)
+    expected_answers = ["answer1", "answer2", "answer3", "answer4", mock_answer]
+
+    old_finances_stored_file = f"finances_{mock_page_name}.txt"
+    connector_added_answer = unique_finance_answers_connector.join(
+        expected_answers)
+    mock_blob.upload_from_string.assert_called_once_with(connector_added_answer)
+    backend.content_bucket.blob.assert_called_once_with(
+        old_finances_stored_file)
+    current_uploaded_string = mock_blob.upload_from_string.call_args[0][
+        0]  # call args is a tuple of tuple
+    returned_answers = current_uploaded_string.split(
+        unique_finance_answers_connector)
+    assert expected_answers == returned_answers
+
+
+#testing the identify wiki page content method
+def test_identify_wiki_page_content_if_page_found(backend):
+    """Checks if the identify_wiki_page_content method returns correct list of words for an existing specified txt file"""
+
+    mock_page_name = "testing_page.txt"
+    mock_page_content = "this is a test file"
+
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    backend.content_bucket.blob.return_value = mock_blob
+
+    curr_page_blob = backend.content_bucket.blob(mock_page_name)
+    curr_page_blob.upload_from_string(mock_page_content)
+    recieved_text = backend.identify_wiki_page_content(mock_page_name)
+    assert recieved_text == curr_page_blob.download_as_text().split()
+
+
+def test_identify_wiki_page_content_not_found(backend):
+    """Checks if the identify_wiki_page_content method returns error for a specific txt file not present in the bucket"""
+    unavilable_page = "page_not_found.txt"
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = False
+    backend.content_bucket.blob.return_value = mock_blob
+
+    expected_error = f"Erorr: The page {unavilable_page} does not exists in the bucket."
+    recieved_error = backend.identify_wiki_page_content(unavilable_page)
+    assert expected_error == recieved_error

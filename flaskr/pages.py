@@ -1,5 +1,6 @@
 from flask import Flask, flash, request, redirect, url_for, render_template, session
 from flaskr.backend import Backend
+from flask import session
 
 
 def make_endpoints(app):
@@ -58,6 +59,7 @@ def make_endpoints(app):
 
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
+        """Gets the user input and checks with the backend if the username with password matches"""
         if session.get('loggedin', False):
             return redirect(url_for('home'))
         message = None
@@ -90,8 +92,6 @@ def make_endpoints(app):
             print("function calleeddd")
             username = request.form['username']
             password = request.form['password']
-            # with open("text_file.txt", "w") as file:
-            #     file.write(f'{username}, {password} this is the returned register details')
             if my_backend.sign_up(username, password):
                 session['loggedin'] = True
                 session['username'] = username
@@ -146,12 +146,15 @@ def make_endpoints(app):
             else:
                 old_review_text = ""
             return render_template("wiki_page.html",
-                                   page_name=final_page_name,
-                                   page_content=curr_page_content,
+                                   page_name=final_page_name,                                   
                                    reviews=stored_reviews,
-                                   review_text=old_review_text)
+                                   review_text=old_review_text,
+                                   page_content=curr_page_content[0],
+                                   page_link=curr_page_content[1],
+                                   Variable_to_store_the_financial_experience='$1200')
+        #changed parameters to get page content from tuple
 
-    @app.route('/pages')
+    @app.route('/pages', methods=['GET', 'POST'])
     def pages():
         """
         gets the page names from bucket and passes it to
@@ -173,3 +176,33 @@ def make_endpoints(app):
         session.pop('loggedin', None)
         session.pop('username', None)
         return redirect(url_for("home"))
+
+    @app.route("/finances", methods=['GET', 'POST'])
+    def finances():
+        if request.method == 'POST':
+            page_name = request.form['page_name']
+            answers = request.form['answers']
+            # with open("text_file.txt", "w") as file:
+            #     file.write(f'{username}, {password} this is the returned register details')
+            if my_backend.store_finances_answers(page_name, answers, True):
+                return render_template("finances.html")
+        return render_template("finances.html")
+
+    # @app.route("/loginsuccesful", methods=['GET', 'POST'])
+    # def submit_login():
+    #     #if Backend determines it can login <--------------------------------------------------------------------Important
+    #     if request.method == 'POST':
+    #         username = request.form['Username']
+    #         password = hash = hashlib.blake2b(
+    #             request.form['Password'].encode()).hexdigest()
+    #     return render_template("Succesful.html", LogorSing='Login')
+
+    # @app.route("/Singsuccesful", methods=['GET', 'POST'])
+    # def submit_sing():
+    #     #if Backend determines it can login <--------------------------------------------------------------------Important
+    #     if request.method == 'POST':
+    #         username = request.form['Username']
+    #         password = hash = hashlib.blake2b(
+    #             request.form['Password'].encode()).hexdigest()
+    #     return render_template("Succesful.html", LogorSing='Sing Up')
+
