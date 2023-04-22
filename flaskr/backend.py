@@ -26,6 +26,8 @@ class Backend:
         return specified_page.download_as_text().split(
         )  #return a list of all the words.
 
+        return specified_page.download_as_text().split()
+
     def get_wiki_page_old(self, page_name):
         """
         Gets the content of a wiki page from the content bucket with the specified name

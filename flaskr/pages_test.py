@@ -296,44 +296,47 @@ def test_home_page1(client):
     assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
 
 
-# def test_wiki_page_Google_Map(client):
-#     """Test if Google Map snapshot is being displayed"""
-#     with patch("flaskr.backend.Backend.identify_wiki_page_content",
-#                return_value=["Page", "content", "test", "Link:", "TestLink"]):
-#         with patch("flaskr.backend.Backend.get_wiki_page",
-#                    return_value=("Page content test", "TestLink")):
-#             resp = client.get("/pages/dumbarton")
-#             assert b'<iframe ' in resp.data
+def test_wiki_page_Google_Map(client):
+    """Test if Google Map snapshot is being displayed"""
+    with patch("flaskr.backend.Backend.identify_wiki_page_content",
+               return_value=["Page", "content", "test", "Link:", "TestLink"]):
+        with patch("flaskr.backend.Backend.get_wiki_page",
+                   return_value=("Page content test", "TestLink")):
+            resp = client.get(f"/pages/dumbarton")
+            assert b'<iframe ' in resp.data
 
-# def test_wiki_page_Google_Map_1(client, monkeypatch):
-#     """Test if Google Map snapshot is not being displayed"""
-#     with patch("flaskr.backend.Backend.identify_wiki_page_content",
-#                return_value=["Page", "content", "test"]):
-#         with patch("flaskr.backend.Backend.get_wiki_page",
-#                    return_value=("Page content test", "")):
-#             resp = client.get("/pages/test")
-#             assert b'<iframe ' not in resp.data
 
-# def test_wiki_page_Financial_experience(client):
-#     """Test if Financial experience is being displayed correctly"""
-#     # Make the request and test the response
-#     with patch("flaskr.backend.Backend.identify_wiki_page_content",
-#                return_value=["Page", "content", "test", "Link:", "TestLink"]):
-#         with patch("flaskr.backend.Backend.get_wiki_page",
-#                    return_value=("Page content test", "TestLink")):
-#             resp = client.get("/pages/dumbarton")
-#             html_content = resp.data.decode('utf-8')
-#             start_tag = html_content.find('<h1 id="element"')
-#             assert start_tag != -1
+def test_wiki_page_Google_Map_1(client, monkeypatch):
+    """Test if Google Map snapshot is not being displayed"""
+    with patch("flaskr.backend.Backend.identify_wiki_page_content",
+               return_value=["Page", "content", "test"]):
+        with patch("flaskr.backend.Backend.get_wiki_page",
+                   return_value=("Page content test", "")):
+            resp = client.get(f"/pages/test")
+            assert b'<iframe ' not in resp.data
 
-# def test_wiki_page_Financial_experience_1(client):
-#     """Test if Financial experience is not being displayed"""
-#     with patch("flaskr.backend.Backend.identify_wiki_page_content",
-#                return_value=["Page", "content", "test"]):
-#         with patch("flaskr.backend.Backend.get_wiki_page",
-#                    return_value=("Page content test", "")):
-#             resp = client.get("/pages/test")
-#             assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
+
+def test_wiki_page_Financial_experience(client):
+    """Test if Financial experience is being displayed correctly"""
+    # Make the request and test the response
+    with patch("flaskr.backend.Backend.identify_wiki_page_content",
+               return_value=["Page", "content", "test", "Link:", "TestLink"]):
+        with patch("flaskr.backend.Backend.get_wiki_page",
+                   return_value=("Page content test", "TestLink")):
+            resp = client.get(f"/pages/dumbarton")
+            html_content = resp.data.decode('utf-8')
+            start_tag = html_content.find('<h1 id="element"')
+            assert start_tag != -1
+
+
+def test_wiki_page_Financial_experience_1(client):
+    """Test if Financial experience is not being displayed"""
+    with patch("flaskr.backend.Backend.identify_wiki_page_content",
+               return_value=["Page", "content", "test"]):
+        with patch("flaskr.backend.Backend.get_wiki_page",
+                   return_value=("Page content test", "")):
+            resp = client.get(f"/pages/test")
+            assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
 
 
 def mock_sign_in():
