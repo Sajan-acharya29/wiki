@@ -1,34 +1,38 @@
 from flaskr.backend import Backend
 from unittest.mock import MagicMock
-import pytest
 import hashlib
+import pytest
 # TODO(Project 1): Write tests for Backend methods.
 
 
 @pytest.fixture
 def backend():
-    """Creates a backend instance and mocks the content and user bucket"""
+    """
+    Creates a backend instance and mocks the content and user bucket
+    """
     backend = Backend()
     backend.content_bucket = MagicMock()
     backend.user_bucket = MagicMock()
     return backend
 
 
-# def test_get_wiki_page_if_page_found(backend):
-#     """Checks if the get_wiki_page method returns correct text for an existing specified txt file"""
+def test_get_wiki_page_old_if_page_found(backend):
+    """
+    Checks if the get_wiki_page method returns correct text for an existing specified txt file
+    """
 
-#     mock_page_name = "testing_page.txt"
-#     mock_page_content = "this is a test content"
+    mock_page_name = "testing_page.txt"
+    mock_page_content = "this is a test content"
 
-#     mock_blob = MagicMock()
-#     mock_blob.exists.return_value = True
-#     backend.content_bucket.blob.return_value = mock_blob
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    backend.content_bucket.blob.return_value = mock_blob
 
-#     curr_page_blob = backend.content_bucket.blob(mock_page_name)
-#     curr_page_blob.upload_from_string(mock_page_content)
+    curr_page_blob = backend.content_bucket.blob(mock_page_name)
+    curr_page_blob.upload_from_string(mock_page_content)
 
-#     recieved_text = backend.get_wiki_page(mock_page_name)
-#     assert recieved_text == curr_page_blob.download_as_text()
+    recieved_text = backend.get_wiki_page_old(mock_page_name)
+    assert recieved_text == curr_page_blob.download_as_text()
 
 
 def test_get_wiki_page(backend):
@@ -47,21 +51,24 @@ def test_get_wiki_page(backend):
                                                      "Testlink.com")
 
 
-# def test_get_wiki_page_if_page_not_found(backend):
-#     """Checks if the get_wiki_page method returns error for a specific txt file not present in the bucket"""
-#     unavilable_page = "page_not_found.txt"
+def test_get_wiki_page_old_if_page_not_found(backend):
+    """
+    Checks if the get_wiki_page method returns error for a specific txt file not present in the bucket
+    """
 
-#     mock_blob = MagicMock()
-#     mock_blob.exists.return_value = False
-#     backend.content_bucket.blob.return_value = mock_blob
-
-#     expected_error = f"Erorr: The page {unavilable_page} does not exists in the bucket."
-#     recieved_error = backend.get_wiki_page(unavilable_page)
-#     assert expected_error == recieved_error
+    unavilable_page = "page_not_found.txt"
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = False
+    backend.content_bucket.blob.return_value = mock_blob
+    expected_error = f"Erorr: The page {unavilable_page} does not exists in the bucket."
+    recieved_error = backend.get_wiki_page_old(unavilable_page)
+    assert expected_error == recieved_error
 
 
 def test_get_all_page_names(backend):
-    """ checks if the get_all_page_names method returns the list of the names in the content bucket"""
+    """
+    checks if the get_all_page_names method returns the list of the names in the content bucket
+    """
     blob1 = MagicMock()
     blob1.name = "test_page1.txt"
 
@@ -75,7 +82,9 @@ def test_get_all_page_names(backend):
 
 
 def test_get_all_page_names_excluding_invalid_page_extension(backend):
-    """ checks if get_all_page_names ignores other file that does not end with .txt"""
+    """
+    checks if get_all_page_names ignores other file that does not end with .txt
+    """
     blob1 = MagicMock()
     blob1.name = "test_page1.txt"
 
@@ -101,7 +110,9 @@ def test_get_all_page_names_excluding_invalid_page_extension(backend):
 
 
 def test_get_all_page_names_if_no_pages_found(backend):
-    """ checks if the get_all_page_names method returns empty list if no pages with extension .txt are found in the content bucket"""
+    """
+    checks if the get_all_page_names method returns empty list if no pages with extension .txt are found in the content bucket
+    """
     blob1 = MagicMock()
     blob1.name = "test_page1"
 
@@ -114,7 +125,9 @@ def test_get_all_page_names_if_no_pages_found(backend):
 
 
 def test_upload_html_files(backend):
-    """tests if the upload method works for the .html files"""
+    """
+    tests if the upload method works for the .html files
+    """
     mock_file_name = "mock_file.html"
     curr_mock_file_content = "<html><head></head><body><This is testing content page</h1></body></html>"
     curr_mock_blob = MagicMock()
@@ -130,7 +143,9 @@ def test_upload_html_files(backend):
 
 
 def test_upload_txt_file(backend):
-    """tests if the upload method works for the .txt files"""
+    """
+    tests if the upload method works for the .txt files
+    """
     mock_file_name = "mock_text_file.txt"
     curr_mock_file_content = "This is testing file for a txt file"
     curr_mock_blob = MagicMock()
@@ -146,7 +161,9 @@ def test_upload_txt_file(backend):
 
 
 def test_upload_img_files(backend):
-    """tests if the upload method works for the image files"""
+    """
+    tests if the upload method works for the image files
+    """
     curr_mock_file_name = "mock_img_file.jpeg"
     curr_mock_file_content = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00'
     curr_mock_blob = MagicMock()
@@ -163,7 +180,9 @@ def test_upload_img_files(backend):
 
 
 def test_signup_new_user(backend):
-    """checks if the user is successfully registered"""
+    """
+    checks if the user is successfully registered
+    """
     username = "sajan"
     password = "testing_password_sajan"
     curr_mock_blob = MagicMock()
@@ -174,7 +193,9 @@ def test_signup_new_user(backend):
 
 
 def test_signup_user_already_exists(backend):
-    """checks if the signup returns false if the current user is already registered"""
+    """
+    checks if the signup returns false if the current user is already registered
+    """
     username = "sajan"
     password = "testing_password_sajan"
     curr_mock_blob = MagicMock()
@@ -185,7 +206,9 @@ def test_signup_user_already_exists(backend):
 
 
 def test_sign_in_user_succesfully_signs_in(backend):
-    """checks if the user with the correct password can sucessfully sign in"""
+    """
+    checks if the user with the correct password can sucessfully sign in
+    """
     username = "sajan"
     password = "testing_password_sajan"
 
@@ -205,7 +228,9 @@ def test_sign_in_user_succesfully_signs_in(backend):
 
 
 def test_sign_in_user_inputs_wrong_password(backend):
-    """checks if the user with the wrong password cannot signin"""
+    """
+    checks if the user with the wrong password cannot signin
+    """
     username = "sajan"
     curr_wrong_password = "testing_wrong_password_sajan"
     stored_original_password = "corrent_testing_sajan"
@@ -223,7 +248,9 @@ def test_sign_in_user_inputs_wrong_password(backend):
 
 
 def test_sign_in_user_not_found(backend):
-    """checks if the user is not present in the user bucket and returns false"""
+    """
+    checks if the user is not present in the user bucket and returns false
+    """
     username = "midnight_user"
     password = "testing_password_sajan"
     curr_mock_blob = MagicMock()
@@ -234,7 +261,9 @@ def test_sign_in_user_not_found(backend):
 
 
 def test_get_image_returns_bytes(backend):
-    """checks if the get_image method returns the bytes of an image"""
+    """
+    checks if the get_image method returns the bytes of an image
+    """
     image_name = "image1.jpeg"
     curr_mock_blob = MagicMock()
     curr_mock_blob.exists.return_value = True
@@ -249,7 +278,9 @@ def test_get_image_returns_bytes(backend):
 
 
 def test_get_image_returns_correct_image_bytes(backend):
-    """checks if the get_image method returns the bytes of an image"""
+    """
+    checks if the get_image method returns the bytes of an image
+    """
     image_name = "image1.jpeg"
     curr_mock_blob = MagicMock()
     curr_mock_blob.exists.return_value = True
@@ -264,8 +295,9 @@ def test_get_image_returns_correct_image_bytes(backend):
 
 
 def test_get_image_if_image_not_found(backend):
-    """checks if the get_image method returns error if the image is not found in the bucket"""
-
+    """
+    checks if the get_image method returns error if the image is not found in the bucket
+    """
     image_name = "unavilable_img.jpeg"
     curr_mock_blob = MagicMock()
     curr_mock_blob.exists.return_value = False
@@ -275,6 +307,91 @@ def test_get_image_if_image_not_found(backend):
     backend.content_bucket.blob.assert_called_once_with(image_name)
     expected_image_error = f"Error: Image {image_name} does not exists in the bucket."
     assert received_image_error == expected_image_error
+
+
+#for review sections tests
+def test_upload_reviews_if_old_reviews_present(backend):
+    """
+    Tests that the upload_reviews method uploads the fresh review to the paage's reviews file along with other existing reviews
+    """
+    mock_page_name = "test_page"
+    mock_username = "sajan"
+    new_mock_review = "I really like this place. It was really fun to visit it."
+    unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"
+    old_mock_reviews = f'first_review{unique_review_connector}second_review{unique_review_connector}third_review{unique_review_connector}fourth_review'
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    mock_blob.download_as_text.return_value = old_mock_reviews
+    backend.content_bucket.blob.return_value = mock_blob
+
+    backend.upload_reviews(mock_page_name, new_mock_review, mock_username)
+    expected_reviews = [
+        "first_review", "second_review", "third_review", "fourth_review",
+        f'{mock_username}: {new_mock_review}'
+    ]
+    review_stored_file = f"review_{mock_page_name}.txt"
+    connector_added_review = unique_review_connector.join(expected_reviews)
+    mock_blob.upload_from_string.assert_called_once_with(connector_added_review)
+    backend.content_bucket.blob.assert_called_once_with(review_stored_file)
+    current_uploaded_string = mock_blob.upload_from_string.call_args[0][
+        0]  # call args is a tuple of tuple
+    returned_reviews = current_uploaded_string.split(unique_review_connector)
+    assert expected_reviews == returned_reviews
+
+
+def test_upload_reviews_if_old_reviews_not_present(backend):
+    """
+    Tests that the upload_reviews method creates a new file to uploads the fresh review to the paage if previous reviews does not exist.
+    """
+    mock_page_name = "test_page"
+    mock_username = "test_user"
+    new_mock_review = "I really like this place. It was really fun to visit it"
+
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = False
+    backend.content_bucket.blob.return_value = mock_blob
+    backend.upload_reviews(mock_page_name, new_mock_review, mock_username)
+
+    review_stored_file = f"review_{mock_page_name}.txt"
+    expected_reviews = f"{mock_username}: {new_mock_review}"
+    mock_blob.upload_from_string.assert_called_once_with(expected_reviews)
+    backend.content_bucket.blob.assert_called_once_with(review_stored_file)
+
+    current_uploaded_string = mock_blob.upload_from_string.call_args[0][
+        0]  # call args is a tuple of tuple
+    returned_reviews = current_uploaded_string  #should not split as just one review do not have the connector
+    assert expected_reviews == returned_reviews
+
+
+def test_get_reviews_if_no_old_reviews(backend):
+    """
+    Tests that the get_reviews method returns the empty list when there are no reviews in for the specified page in the content bucket
+    """
+    mock_page_name = "test_page"
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = False
+    backend.content_bucket.blob.return_value = mock_blob
+    expected_result = []
+    recieved_review_from_buckets = backend.get_reviews(mock_page_name)
+    assert recieved_review_from_buckets == expected_result
+
+
+def test_get_reviews_if_old_reviews_present(backend):
+    """
+    Tests that the get_reviews method returns the list of exisiting reviews for the specified page in the content bucket
+    """
+    mock_page_name = "test_page"
+    unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"
+    mock_reviews = f'first_review{unique_review_connector}second_review{unique_review_connector}third_review{unique_review_connector}fourth_review'
+    mock_blob = MagicMock()
+    mock_blob.exists.return_value = True
+    mock_blob.download_as_text.return_value = mock_reviews
+    backend.content_bucket.blob.return_value = mock_blob
+    expected_reviews = [
+        "first_review", "second_review", "third_review", "fourth_review"
+    ]
+    recieved_review_from_buckets = backend.get_reviews(mock_page_name)
+    assert recieved_review_from_buckets == expected_reviews
 
 
 #test for cameron's r2 feature.

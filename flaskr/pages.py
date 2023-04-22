@@ -1,4 +1,4 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, session
 from flaskr.backend import Backend
 from flask import session
 
@@ -17,11 +17,16 @@ def make_endpoints(app):
         greetings = "Welcome To Brainiacs"
         return render_template("main.html", greetings=greetings)
 
-    # TODO(Project 1): Implement additional routes according to the project requirements.
-
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
-        """checks the extension and uploads valid files to the content bucket"""
+        """
+        This route handles GET and POST requests for uploading files to a content bucket.
+        It checks if the user is logged in using session variables, 
+        checks that the uploaded file has a valid extension, and uploads the file to the content bucket if it is valid. 
+        If the file is uploaded successfully, it renders a success message. If not, it renders an error message
+        """
+        if not session.get('loggedin', False):
+            return redirect(url_for('home'))
 
         ALLOWED_EXTENSIONS = {
             'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'
@@ -44,6 +49,7 @@ def make_endpoints(app):
 
             if file and allowed_file(file.filename):
                 my_backend.upload(f'{file.filename}', file)
+                # flash("file sucessfully uploaded")
                 return render_template('upload.html',
                                        message="file sucessfully uploaded")
             else:
@@ -54,7 +60,7 @@ def make_endpoints(app):
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
         """Gets the user input and checks with the backend if the username with password matches"""
-        if session.get('loggedin', False) == True:
+        if session.get('loggedin', False):
             return redirect(url_for('home'))
         message = None
         if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
@@ -78,14 +84,24 @@ def make_endpoints(app):
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
-        """Gets the user input and sends it to the backend to register the user"""
+        if session.get('loggedin', False):
+            return redirect(url_for('home'))
+
+        message = None
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']
             password = request.form['password']
             if my_backend.sign_up(username, password):
-                return render_template("login_succesfull.html")
-        return render_template("signup.html")
+                session['loggedin'] = True
+                session['username'] = username
+                # return render_template("login_succesfull.html")
+                return render_template("main.html",
+                                       sent_user_name=username,
+                                       signed_in=True)
+            else:
+                message = "Username already present"
+        return render_template("signup.html", message=message)
 
     @app.route('/about')
     def about():
@@ -95,36 +111,72 @@ def make_endpoints(app):
         # saves the image file into the current directory.
         return render_template("about.html")
 
-    @app.route('/pages/<page_name>', methods=['GET', 'POST'])
+    @app.route('/pages/<page_name>', methods=["GET", "POST"])
     def page(page_name):
-        final_page_name = page_name + ".txt"
-        curr_page_content = my_backend.get_wiki_page(final_page_name)
-
+        """
+        This route handles GET and POST requests for wiki pages.
+        it retrieves wiki page content and stored reviews from a backend, 
+        and uploads reviews to the backend with the file name if the user is logged in. 
+        It also handles session variables and redirects to the last visited page if succesfully logged in
+        """
+        #adding sessions to prevent from logging out without logout
+        if request.method == "POST":
+            if "loggedin" not in session:
+                if request.form.get(
+                        "review") and not request.form.get("review").isspace():
+                    session["page_to_redirect"] = url_for('page',
+                                                          page_name=page_name)
+                    session["review_text"] = request.form.get("review")
+                return redirect("/signin")
+            else:
+                review_data = request.form.get("review")
+                username = session.get("username")
+                if review_data and not review_data.isspace():
+                    my_backend.upload_reviews(page_name, review_data, username)
+                else:
+                    flash(f'ERROR: Empty review.')
+                    return redirect(url_for('page', page_name=page_name))
+                return redirect(url_for('page', page_name=page_name))
+        else:
+            final_page_name = page_name + ".txt"
+            curr_page_content = my_backend.get_wiki_page(final_page_name)
+            stored_reviews = my_backend.get_reviews(page_name)
+            if "review_text" in session:
+                old_review_text = session.pop("review_text")
+            else:
+                old_review_text = ""
+            return render_template(
+                "wiki_page.html",
+                page_name=final_page_name,
+                reviews=stored_reviews,
+                review_text=old_review_text,
+                page_content=curr_page_content[0],
+                page_link=curr_page_content[1],
+                Variable_to_store_the_financial_experience='$1200')
         #changed parameters to get page content from tuple
-        return render_template(
-            "wiki_page.html",
-            page_name=final_page_name,
-            page_content=curr_page_content[0],
-            page_link=curr_page_content[1],
-            Variable_to_store_the_financial_experience='$1200')
 
     @app.route('/pages', methods=['GET', 'POST'])
     def pages():
-        """gets the page names from bucket and passes it to """
+        """
+        gets the page names from bucket and passes it to
+        """
         all_page_names = my_backend.get_all_page_names()
         return render_template("pages.html", all_page_names=all_page_names)
 
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
-        return redirect("/")
+        """
+        This route handles the logout of the user.
+        If the user is not logged in, it redirects to the home page. 
+        If the user is logged in, it removes the 'loggedin' and 'username' keys from the session
+        and then redirects to the home page.
+        """
+        if not session.get('loggedin', False):
+            return redirect(url_for('home'))
 
-    @app.route("/signup")
-    def sing_up():
-        return render_template("Sing_Up.html")
-
-    @app.route("/login")
-    def login():
-        return render_template("Login.html")
+        session.pop('loggedin', None)
+        session.pop('username', None)
+        return redirect(url_for("home"))
 
     @app.route("/finances", methods=['GET', 'POST'])
     def finances():
@@ -137,20 +189,20 @@ def make_endpoints(app):
                 return render_template("finances.html")
         return render_template("finances.html")
 
-    @app.route("/loginsuccesful", methods=['GET', 'POST'])
-    def submit_login():
-        #if Backend determines it can login <--------------------------------------------------------------------Important
-        if request.method == 'POST':
-            username = request.form['Username']
-            password = hash = hashlib.blake2b(
-                request.form['Password'].encode()).hexdigest()
-        return render_template("Succesful.html", LogorSing='Login')
+    # @app.route("/loginsuccesful", methods=['GET', 'POST'])
+    # def submit_login():
+    #     #if Backend determines it can login <--------------------------------------------------------------------Important
+    #     if request.method == 'POST':
+    #         username = request.form['Username']
+    #         password = hash = hashlib.blake2b(
+    #             request.form['Password'].encode()).hexdigest()
+    #     return render_template("Succesful.html", LogorSing='Login')
 
-    @app.route("/Singsuccesful", methods=['GET', 'POST'])
-    def submit_sing():
-        #if Backend determines it can login <--------------------------------------------------------------------Important
-        if request.method == 'POST':
-            username = request.form['Username']
-            password = hash = hashlib.blake2b(
-                request.form['Password'].encode()).hexdigest()
-        return render_template("Succesful.html", LogorSing='Sing Up')
+    # @app.route("/Singsuccesful", methods=['GET', 'POST'])
+    # def submit_sing():
+    #     #if Backend determines it can login <--------------------------------------------------------------------Important
+    #     if request.method == 'POST':
+    #         username = request.form['Username']
+    #         password = hash = hashlib.blake2b(
+    #             request.form['Password'].encode()).hexdigest()
+    #     return render_template("Succesful.html", LogorSing='Sing Up')

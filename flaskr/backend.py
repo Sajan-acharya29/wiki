@@ -26,7 +26,15 @@ class Backend:
         return specified_page.download_as_text().split(
         )  #return a list of all the words.
 
-        return specified_page.download_as_text().split()
+    def get_wiki_page_old(self, page_name):
+        """
+        Gets the content of a wiki page from the content bucket with the specified name
+        returns Content of the wiki page, or None if the page does not exist.
+        """
+        specified_page = self.content_bucket.blob(page_name)
+        if not specified_page.exists():
+            return f"Erorr: The page {page_name} does not exists in the bucket."
+        return specified_page.download_as_text()
 
     def get_wiki_page(self, page_name):
         """Get the text description and link of the place in two separated variables and return it as a Tuple"""
@@ -48,8 +56,13 @@ class Backend:
         return ("".join(Description), link)
 
     def get_all_page_names(self):
-        """returns names of all wiki pages or txt files user upload in the content bucket."""
+        """
+        returns names of all wiki pages or txt files user upload in the content bucket.
+        ignores the txt file that start with finances_ and review_
+        """
         all_pages_list = []
+        REVIEW_PREFIX_LEN = 7
+        FINANCE_PREFIX_LEN = 9
         blobs = self.content_bucket.list_blobs(prefix="")
         REVIEW_PREFIX_LEN = 7
         FINANCE_PREFIX_LEN = 9
@@ -64,6 +77,9 @@ class Backend:
         return all_pages_list
 
     def upload(self, file_name, content):
+        """
+        Uploads the given file content to the content bucket with the given filename.
+        """
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
 
@@ -115,6 +131,41 @@ class Backend:
         image_bytes = blob.download_as_bytes()
         return image_bytes
 
+    """ Below methods for uploading and getting reviews"""
+
+    def upload_reviews(self, page_name, curr_user_review, username):
+        """
+        Uploads a new review to a review_ file in the content bucket, or creates a new review_ file with given filename for the particular page if it doesn't exist
+        """
+        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"review_{page_name}.txt"
+        blob = self.content_bucket.blob(review_txt_file)
+        if blob.exists():
+            review_text = blob.download_as_text()
+            old_reviews_list = review_text.split(unique_review_connector)
+        else:
+            old_reviews_list = []
+        fresh_review = f"{username}: {curr_user_review}"
+        old_reviews_list.append(fresh_review)
+        updated_review_data = unique_review_connector.join(
+            old_reviews_list
+        )  #adds the fresh review to the old list with the unique connecter string added to the end.
+        blob.upload_from_string(updated_review_data)
+
+    def get_reviews(self, page_name):
+        """
+        Retrives the reviews from a text file in the content bucket for a given wiki page.
+        """
+        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"review_{page_name}.txt"
+        blob = self.content_bucket.blob(review_txt_file)
+        if blob.exists():
+            review_data = blob.download_as_text()
+            review_data_list = review_data.split(unique_review_connector)
+            return review_data_list
+        else:
+            return []
+
     #this is cameron's r2 implemented by sajan
     def store_finances_answers(self, page_name, answers, verified):
         """uploads the finance answers to bucket and return Successfully Uploaded if user has been verified else returns 'Please log in'"""
@@ -137,12 +188,3 @@ class Backend:
         )  #adds the new finances information to the old list with the unique connecter string added to the end.
         blob.upload_from_string(updated_finance_answers)
         return "Successfully Uploaded"
-
-    def identify_wiki_page_content(self, page_name):
-        '''Gets the content of a wiki page from the content bucket 
-        with the specified name returns Content of the wiki page as a list of words'''
-        specified_page = self.content_bucket.blob(page_name)
-        if not specified_page.exists():
-            return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text().split(
-        )  #return a list of all the words.
