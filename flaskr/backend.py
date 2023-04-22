@@ -23,8 +23,9 @@ class Backend:
         specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text().split()  #return a list of all the words.
-        
+        return specified_page.download_as_text().split(
+        )  #return a list of all the words.
+
     def get_wiki_page_old(self, page_name):
         """
         Gets the content of a wiki page from the content bucket with the specified name
@@ -34,7 +35,6 @@ class Backend:
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
-
 
     def get_wiki_page(self, page_name):
         """Get the text description and link of the place in two separated variables and return it as a Tuple"""
@@ -165,6 +165,7 @@ class Backend:
             return review_data_list
         else:
             return []
+
     #this is cameron's r2 implemented by sajan
     def store_finances_answers(self, page_name, answers, verified):
         """uploads the finance answers to bucket and return Successfully Uploaded if user has been verified else returns 'Please log in'"""

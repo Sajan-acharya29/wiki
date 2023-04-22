@@ -145,13 +145,14 @@ def make_endpoints(app):
                 old_review_text = session.pop("review_text")
             else:
                 old_review_text = ""
-            return render_template("wiki_page.html",
-                                   page_name=final_page_name,                                   
-                                   reviews=stored_reviews,
-                                   review_text=old_review_text,
-                                   page_content=curr_page_content[0],
-                                   page_link=curr_page_content[1],
-                                   Variable_to_store_the_financial_experience='$1200')
+            return render_template(
+                "wiki_page.html",
+                page_name=final_page_name,
+                reviews=stored_reviews,
+                review_text=old_review_text,
+                page_content=curr_page_content[0],
+                page_link=curr_page_content[1],
+                Variable_to_store_the_financial_experience='$1200')
         #changed parameters to get page content from tuple
 
     @app.route('/pages', methods=['GET', 'POST'])
@@ -205,4 +206,3 @@ def make_endpoints(app):
     #         password = hash = hashlib.blake2b(
     #             request.form['Password'].encode()).hexdigest()
     #     return render_template("Succesful.html", LogorSing='Sing Up')
-

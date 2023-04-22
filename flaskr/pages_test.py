@@ -284,6 +284,8 @@ def test_review_is_not_cleared_from_form_even_after_redirecting(client):
         assert session["review_text"] == review
     response = client.get(response.location, follow_redirects=True)
     assert response.status_code == 200
+
+
 def test_home_page1(client):
     resp = client.get("/")
     assert resp.status_code == 200
@@ -303,7 +305,6 @@ def test_home_page1(client):
 #             resp = client.get("/pages/dumbarton")
 #             assert b'<iframe ' in resp.data
 
-
 # def test_wiki_page_Google_Map_1(client, monkeypatch):
 #     """Test if Google Map snapshot is not being displayed"""
 #     with patch("flaskr.backend.Backend.identify_wiki_page_content",
@@ -312,7 +313,6 @@ def test_home_page1(client):
 #                    return_value=("Page content test", "")):
 #             resp = client.get("/pages/test")
 #             assert b'<iframe ' not in resp.data
-
 
 # def test_wiki_page_Financial_experience(client):
 #     """Test if Financial experience is being displayed correctly"""
@@ -326,7 +326,6 @@ def test_home_page1(client):
 #             start_tag = html_content.find('<h1 id="element"')
 #             assert start_tag != -1
 
-
 # def test_wiki_page_Financial_experience_1(client):
 #     """Test if Financial experience is not being displayed"""
 #     with patch("flaskr.backend.Backend.identify_wiki_page_content",
@@ -335,7 +334,6 @@ def test_home_page1(client):
 #                    return_value=("Page content test", "")):
 #             resp = client.get("/pages/test")
 #             assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
-
 
 
 def mock_sign_in():
