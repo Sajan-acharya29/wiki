@@ -1,7 +1,7 @@
 from flaskr.backend import Backend
 from unittest.mock import MagicMock
-import pytest
 import hashlib
+import pytest
 # TODO(Project 1): Write tests for Backend methods.
 
 

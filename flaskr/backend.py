@@ -35,9 +35,11 @@ class Backend:
         ignores the txt file that start with finances_ and review_
         """
         all_pages_list = []
+        REVIEW_PREFIX_LEN = 7
+        FINANCE_PREFIX_LEN = 9
         blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
-            if blob.name.endswith(".txt") and blob.name[0:7] != "review_" and blob.name[0:9] != "finances_":       #just to show the pages instead of reviews
+            if blob.name.endswith(".txt") and blob.name[0:REVIEW_PREFIX_LEN] != "review_" and blob.name[0:FINANCE_PREFIX_LEN] != "finances_":       #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
@@ -131,48 +133,3 @@ class Backend:
           return review_data_list        
         else:
           return []
-
-# my = Backend()
-# #test for upload method.
-# user = "sajan"
-# page_name = "sajan_file_testing"
-# review_text = "I liked the emoji at the end. So this means that you are doing your work"
-# my.upload_reviews(page_name, review_text, user)
-# print("succesfully worked")
-
-# curr_review = my.get_reviews(page_name)
-# print(curr_review)
-
-##test for older methods
-# get_page_names = my.get_all_page_names()
-# print(get_page_names)
-# get_page = my.get_wiki_page(get_page_names[0])
-# print(get_page)
-
-# get_page = my.get_wiki_page("greet.html")
-# print(get_page)
-
-#uploads file
-# file = open("check_file.txt")
-# my.upload("check_file.txt", file)
-# print("completed upload")
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_up(name, password))
-# #added sajan.
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_in(name, password))
-# #returns true as user is signed in succesfully
-
-# name = "sajan"
-# password = "test1012"
-# print(my.sign_in(name, password))
-#returns False and error as user is not signed in succesfully
-
-# image_bytes = my.get_image("img2.jpeg")
-# with Image.open(io.BytesIO(image_bytes)) as img:
-#     img.save("downloaded_img_file.jpeg")
-# saves the image file into the current directory.

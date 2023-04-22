@@ -16,18 +16,6 @@ def make_endpoints(app):
         greetings = "Welcome To Brainiacs"
         return render_template("main.html", greetings=greetings)
 
-
-    # @app.route('/about')
-    # def about():
-    #     # first_image_bytes = my.get_image("cameron.jpeg")
-    #     # with Image.open(io.BytesIO(first_image_bytes)) as img:
-    #     #     img.save("downloaded_img_file.jpeg")
-    #     # saves the image file into the current directory.
-    #     return render_template("about.html")
-
-    # TODO(Project 1): Implement additional routes according to the project requirements.
-
-
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         """
@@ -65,7 +53,7 @@ def make_endpoints(app):
 
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
-        if session.get('loggedin', False) == True:
+        if session.get('loggedin', False):
             return redirect(url_for('home'))  
         message = None
         if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
@@ -89,7 +77,7 @@ def make_endpoints(app):
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():  
-        if session.get('loggedin', False) == True:
+        if session.get('loggedin', False):
             return redirect(url_for('home'))
 
         message = None  
@@ -102,7 +90,10 @@ def make_endpoints(app):
             if my_backend.sign_up(username, password):
                 session['loggedin'] = True
                 session['username'] = username                
-                return render_template("login_succesfull.html")
+                # return render_template("login_succesfull.html")
+                return render_template("main.html",
+                                       sent_user_name=username,
+                                       signed_in=True)
             else:
                 message = "Username already present"
         return render_template("signup.html", message = message)
@@ -173,7 +164,7 @@ def make_endpoints(app):
         If the user is logged in, it removes the 'loggedin' and 'username' keys from the session
         and then redirects to the home page.
         """
-        if session.get('loggedin', False) == False:
+        if not session.get('loggedin', False):
             return redirect(url_for('home'))
         
         session.pop('loggedin', None)

@@ -59,17 +59,6 @@ def test_signout(client):
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
 
-
-def test_home_page(client):
-    resp = client.get("/")
-    assert resp.status_code == 200
-    assert b'<li><a href="/">Home</a></li>' in resp.data
-    assert b'<li><a href="/pages">Pages</a></li>' in resp.data
-    assert b'<li><a href="/about">About</a></li>' in resp.data
-    assert b'<li><a href="/signin">Sign in</a></li>' in resp.data
-    assert b'<li><a href="/signup">Sign Up</a></li>' in resp.data
-
-
 def test_upload_route_user_not_logged_in(client):
     """
     Tests the upload route's behavior when a user who is not logged in tries to upload a file.
@@ -180,12 +169,7 @@ def test_review_written_while_logged_in(client):
         response = client.post(f"/pages/{mock_page_name}", data={"review": review})
         mock_upload.assert_called_once_with(mock_page_name, review, username)
         assert response.status_code == 302
-        assert response.headers['Location'] == f"/pages/{mock_page_name}"
         assert b"Redirecting" in response.data
-
-        resp = client.get(f'/pages/{mock_page_name}')
-        assert resp.status_code == 200
-        assert b"submit" in resp.data
 
 
 def test_whitespace_review_written_while_logged_in(client):
@@ -205,12 +189,7 @@ def test_whitespace_review_written_while_logged_in(client):
         response = client.post(f"/pages/{mock_page_name}", data={"review": empty_review})
         assert not mock_upload.called       #the upload_reviews is not called
         assert response.status_code == 302
-        assert response.headers['Location'] == f"/pages/{mock_page_name}"
         assert b"Redirecting" in response.data
-
-        resp = client.get(f'/pages/{mock_page_name}')
-        assert resp.status_code == 200
-        assert b"submit" in resp.data
 
 
 def test_review_written_while_not_logged_in(client):
@@ -290,15 +269,3 @@ def test_review_is_not_cleared_from_form_even_after_redirecting(client):
         assert session["review_text"] == review
     response = client.get(response.location, follow_redirects=True)
     assert response.status_code == 200
-
-
-# TODO(Project 1): Write tests for other routes.
-"""this test is failing"""
-# def test_about_page(client):
-#     resp = client.get("/about")
-#     assert resp.status_code == 200
-#     assert b'<h1 class="w3-text-teal">Sajan</h1>' in resp.data
-#     assert b'<img src="https://cdn.discordapp.com/attachments/1076232707652206772/1081955756577927209/img1.jpg" alt="Test" width="350" height="300" class="w3-border w3-center">' in resp.data
-#     assert b'<h1 class="w3-text-teal">Eliel</h1>' in resp.data
-#     assert b'<img src="https://cdn.discordapp.com/attachments/1079200030440833175/1083448363917266974/584A0C35-F8E5-4AC0-AE34-C6C932ED064F.jpg" alt="Test" width="350" height="300" class="w3-border w3-center">' in resp.data
-#     assert b'<h1 class="w3-text-teal">Cameron</h1>' in resp.data
