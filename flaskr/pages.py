@@ -19,19 +19,6 @@ def make_endpoints(app):
 
     # TODO(Project 1): Implement additional routes according to the project requirements.
 
-    ALLOWED_EXTENSIONS = {
-        'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'
-    }
-    # @app.route('/about')
-    # def about():
-    #     # first_image_bytes = my.get_image("cameron.jpeg")
-    #     # with Image.open(io.BytesIO(first_image_bytes)) as img:
-    #     #     img.save("downloaded_img_file.jpeg")
-    #     # saves the image file into the current directory.
-    #     return render_template("about.html")
-
-    # TODO(Project 1): Implement additional routes according to the project requirements.
-
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
         """checks the extension and uploads valid files to the content bucket"""
@@ -96,14 +83,9 @@ def make_endpoints(app):
             print("function calleeddd")
             username = request.form['username']
             password = request.form['password']
-            # with open("text_file.txt", "w") as file:
-            #     file.write(f'{username}, {password} this is the returned register details')
             if my_backend.sign_up(username, password):
                 return render_template("login_succesfull.html")
-
         return render_template("signup.html")
-
-    #this is camerons
 
     @app.route('/about')
     def about():

@@ -51,8 +51,14 @@ class Backend:
         """returns names of all wiki pages or txt files user upload in the content bucket."""
         all_pages_list = []
         blobs = self.content_bucket.list_blobs(prefix="")
+        REVIEW_PREFIX_LEN = 7
+        FINANCE_PREFIX_LEN = 9
         for blob in blobs:
-            if blob.name.endswith(".txt"):
+            if blob.name.endswith(
+                    ".txt"
+            ) and blob.name[0:REVIEW_PREFIX_LEN] != "review_" and blob.name[
+                    0:
+                    FINANCE_PREFIX_LEN] != "finances_":  #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
@@ -108,6 +114,29 @@ class Backend:
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
+
+    #this is cameron's r2 implemented by sajan
+    def store_finances_answers(self, page_name, answers, verified):
+        """uploads the finance answers to bucket and return Successfully Uploaded if user has been verified else returns 'Please log in'"""
+        if not verified:
+            return "Please log in"
+
+        unique_finance_answers_connector = "$3&%!*roadmapr3#brainacs_sajan@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the finances info. so we can seperate finances answers based on this.
+        finance_answers_txt_file = f"finances_{page_name}.txt"
+        blob = self.content_bucket.blob(finance_answers_txt_file)
+        if blob.exists():
+            old_finances_text = blob.download_as_text()
+            old_finances_answers_list = old_finances_text.split(
+                unique_finance_answers_connector)
+        else:
+            old_finances_answers_list = []
+        new_finance_answer = answers
+        old_finances_answers_list.append(new_finance_answer)
+        updated_finance_answers = unique_finance_answers_connector.join(
+            old_finances_answers_list
+        )  #adds the new finances information to the old list with the unique connecter string added to the end.
+        blob.upload_from_string(updated_finance_answers)
+        return "Successfully Uploaded"
 
     def identify_wiki_page_content(self, page_name):
         '''Gets the content of a wiki page from the content bucket 
