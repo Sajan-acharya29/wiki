@@ -88,4 +88,3 @@ class Backend:
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
-
