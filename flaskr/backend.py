@@ -137,6 +137,7 @@ class Backend:
         )  #adds the new finances information to the old list with the unique connecter string added to the end.
         blob.upload_from_string(updated_finance_answers)
         return "Successfully Uploaded"
+
     def identify_wiki_page_content(self, page_name):
         '''Gets the content of a wiki page from the content bucket 
         with the specified name returns Content of the wiki page as a list of words'''

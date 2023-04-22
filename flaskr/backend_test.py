@@ -353,6 +353,8 @@ def test_store_finances_answers_if_old_answers_present(backend):
     returned_answers = current_uploaded_string.split(
         unique_finance_answers_connector)
     assert expected_answers == returned_answers
+
+
 #testing the identify wiki page content method
 def test_identify_wiki_page_content_if_page_found(backend):
     """Checks if the identify_wiki_page_content method returns correct list of words for an existing specified txt file"""

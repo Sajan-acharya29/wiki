@@ -218,7 +218,7 @@ def test_signin_successful(app, client):
         with client.session_transaction() as sess:
             assert sess['loggedin'] == True
             assert sess['username'] == 'test_user'
-      
+
 
 # TODO(Project 1): Write tests for other routes.
 """this test is failing"""
