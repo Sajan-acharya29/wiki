@@ -83,7 +83,6 @@ class Backend:
         Gets an image from the image bucket.
         returns bytes: Binary data of the image, or None if the image does not exist.
         """
-
         blob = self.content_bucket.blob(image_name)
         if not blob.exists():
             return f"Error: Image {image_name} does not exists in the bucket."
