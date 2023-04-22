@@ -23,8 +23,7 @@ class Backend:
         specified_page = self.content_bucket.blob(page_name)
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
-        return specified_page.download_as_text().split(
-        )  #return a list of all the words.
+        return specified_page.download_as_text().split()  #return a list of all the words.
         
     def get_wiki_page_old(self, page_name):
         """
