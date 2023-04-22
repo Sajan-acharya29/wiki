@@ -47,14 +47,6 @@ class Backend:
 
         return ("".join(Description), link)
 
-    # def get_all_page_names(self):
-    #     """returns names of all wiki pages or txt files user upload in the content bucket."""
-    #     all_pages_list = []
-    #     blobs = self.content_bucket.list_blobs(prefix="")
-    #     for  blob in blobs:
-    #         if blob.name.endswith(".txt"):
-    #             all_pages_list.append(blob.name)
-    #     return all_pages_list
     def get_all_page_names(self):
         """returns names of all wiki pages or txt files user upload in the content bucket."""
         all_pages_list = []
@@ -77,14 +69,14 @@ class Backend:
         site_secret = "brainiacs_password"
         blob = self.user_bucket.blob(username)
         if blob.exists():
-            return False  #User already exists  so returns False
+            return False
 
         password_with_salt = f"{username}{site_secret}{password}"
         hashed_password = hashlib.blake2b(
-            password_with_salt.encode()).hexdigest()  #returns a str objects
+            password_with_salt.encode()).hexdigest()
         curr_user_details = username + ":" + hashed_password
         blob.upload_from_string(curr_user_details)
-        return True  # User added successfully
+        return True
 
     def sign_in(self, username, password):
         """
@@ -93,9 +85,9 @@ class Backend:
         """
         blob = self.user_bucket.blob(username)
         if not blob.exists():
-            return False  #User does not exist
-        curr_user_details = blob.download_as_text(
-        )  #downloads : "sajan:testpassword"
+            return False
+
+        curr_user_details = blob.download_as_text()
         stored_user_password = curr_user_details.split(":")[1]
 
         site_secret = "brainiacs_password"
@@ -103,51 +95,16 @@ class Backend:
         hashed_password = hashlib.blake2b(
             password_with_salt.encode()).hexdigest()
         if hashed_password == stored_user_password:
-            return True  #signed in successfully
-        return False  #wrong password
+            return True
+        return False
 
     def get_image(self, image_name):
         """
         Gets an image from the image bucket.
         returns bytes: Binary data of the image, or None if the image does not exist.
         """
-
         blob = self.content_bucket.blob(image_name)
         if not blob.exists():
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
-
-
-# get_page_names = my.get_all_page_names()
-# print(get_page_names)
-# get_page = my.get_wiki_page(get_page_names[0])
-# print(get_page)
-
-# get_page = my.get_wiki_page("greet.html")
-# print(get_page)
-
-#uploads file
-# file = open("check_file.txt")
-# my.upload("check_file.txt", file)
-# print("completed upload")
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_up(name, password))
-# #added sajan.
-
-# name = "sajan"
-# password = "test10"
-# print(my.sign_in(name, password))
-# #returns true as user is signed in succesfully
-
-# name = "sajan"
-# password = "test1012"
-# print(my.sign_in(name, password))
-#returns False and error as user is not signed in succesfully
-
-# image_bytes = my.get_image("img2.jpeg")
-# with Image.open(io.BytesIO(image_bytes)) as img:
-#     img.save("downloaded_img_file.jpeg")
-# saves the image file into the current directory.
