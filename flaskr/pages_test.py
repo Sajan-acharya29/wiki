@@ -59,6 +59,7 @@ def test_signout(client):
     assert b'<a href="/upload" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Upload</a>' not in resp.data
     assert b'<a href="/signout" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Logout</a>' not in resp.data
 
+
 def test_upload_route_user_not_logged_in(client):
     """
     Tests the upload route's behavior when a user who is not logged in tries to upload a file.
@@ -67,11 +68,14 @@ def test_upload_route_user_not_logged_in(client):
     with patch("flaskr.backend.Backend.upload", return_value=None):
         with client.session_transaction() as session:
             session['loggedin'] = False
-        data = {'file': (io.BytesIO(b'this is a test file content'), 'test_file.txt'),
-                'filename': 'test_file.txt'}
+        data = {
+            'file':
+                (io.BytesIO(b'this is a test file content'), 'test_file.txt'),
+            'filename': 'test_file.txt'
+        }
 
-        response = client.post("/upload", data= data)
-        assert response.status_code == 302    #the upload route redirect to home if logged in 
+        response = client.post("/upload", data=data)
+        assert response.status_code == 302  #the upload route redirect to home if logged in
 
 
 def test_upload_route_successful(client):
@@ -79,17 +83,19 @@ def test_upload_route_successful(client):
     Tests if the upload route is sucessfully uploading the file
     """
     with patch("flaskr.backend.Backend.upload", return_value=None):
-            with client.session_transaction() as session:
-                session['loggedin'] = True
+        with client.session_transaction() as session:
+            session['loggedin'] = True
 
-            data = {'file': (io.BytesIO(b'this is a test file content'), 'test_file.txt'),
-                'filename': 'test_file.txt'}
+        data = {
+            'file':
+                (io.BytesIO(b'this is a test file content'), 'test_file.txt'),
+            'filename': 'test_file.txt'
+        }
 
-            response = client.post("/upload",
-                                data= data)
-            assert response.status_code == 200
-            print(response.data)
-            assert b'file sucessfully uploaded' in response.data
+        response = client.post("/upload", data=data)
+        assert response.status_code == 200
+        print(response.data)
+        assert b'file sucessfully uploaded' in response.data
 
 
 def test_upload_route_empty_file_name(client):
@@ -103,8 +109,10 @@ def test_upload_route_empty_file_name(client):
         my_file_name = ""
         my_file_content = io.BytesIO(b"this is a test file")
 
-        data = {'file': (my_file_content, my_file_name),
-                'filename': my_file_name}
+        data = {
+            'file': (my_file_content, my_file_name),
+            'filename': my_file_name
+        }
 
     response = client.post("/upload", data=data)
     assert response.status_code == 200
@@ -134,8 +142,10 @@ def test_upload_route_wrong_extension(client):
             session['loggedin'] = True
         my_file_name = "test_file.mp56"
         my_file_content = io.BytesIO(b"this is a test file")
-        data = {'file': (my_file_content, my_file_name),
-                'filename': my_file_name}
+        data = {
+            'file': (my_file_content, my_file_name),
+            'filename': my_file_name
+        }
     response = client.post("/upload", data=data)
     assert response.status_code == 200
     assert b'wrong format file' in response.data
@@ -146,7 +156,7 @@ def test_upload_route_get_method(client):
     Tests the get method of the upload route
     """
     with client.session_transaction() as session:
-            session['loggedin'] = True
+        session['loggedin'] = True
     response = client.get("/upload")
     assert response.status_code == 200
     assert b'Upload new File' in response.data
@@ -165,8 +175,9 @@ def test_review_written_while_logged_in(client):
         with client.session_transaction() as session:
             session['loggedin'] = True
             session['username'] = username
-        
-        response = client.post(f"/pages/{mock_page_name}", data={"review": review})
+
+        response = client.post(f"/pages/{mock_page_name}",
+                               data={"review": review})
         mock_upload.assert_called_once_with(mock_page_name, review, username)
         assert response.status_code == 302
         assert b"Redirecting" in response.data
@@ -185,9 +196,10 @@ def test_whitespace_review_written_while_logged_in(client):
         with client.session_transaction() as session:
             session['loggedin'] = True
             session['username'] = username
-        
-        response = client.post(f"/pages/{mock_page_name}", data={"review": empty_review})
-        assert not mock_upload.called       #the upload_reviews is not called
+
+        response = client.post(f"/pages/{mock_page_name}",
+                               data={"review": empty_review})
+        assert not mock_upload.called  #the upload_reviews is not called
         assert response.status_code == 302
         assert b"Redirecting" in response.data
 
@@ -200,14 +212,15 @@ def test_review_written_while_not_logged_in(client):
         mock_upload.return_value = None
         mock_page_name = "test_page"
         review = "I really like this place. It was really fun to visit it"
-        response = client.post(f"/pages/{mock_page_name}", data={"review": review})
+        response = client.post(f"/pages/{mock_page_name}",
+                               data={"review": review})
         assert not mock_upload.called
         assert response.status_code == 302
         assert response.headers['Location'] == "/signin"
         assert b"Redirecting" in response.data
         assert b'target URL: <a href="/signin">/signin</a>' in response.data
-    
-    
+
+
 def test_if_user_review_is_displayed_in_specified_pages(client):
     """
     Tests that the new review is displayed on the specified page combined with the existing reviews.
@@ -239,7 +252,7 @@ def test_succesfull_login_redirects_to_previous_page(client):
         with client.session_transaction() as session:
             session['page_to_redirect'] = mock_page_name
 
-        response = client.post("/signin", data = login_details)
+        response = client.post("/signin", data=login_details)
         assert response.status_code == 302
         assert b"Redirecting" in response.data
         assert b"test_page" in response.data

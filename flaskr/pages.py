@@ -23,14 +23,17 @@ def make_endpoints(app):
         It checks if the user is logged in using session variables, 
         checks that the uploaded file has a valid extension, and uploads the file to the content bucket if it is valid. 
         If the file is uploaded successfully, it renders a success message. If not, it renders an error message
-        """        
+        """
         if not session.get('loggedin', False):
             return redirect(url_for('home'))
 
-        ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'}
+        ALLOWED_EXTENSIONS = {
+            'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'html', 'htm'
+        }
 
         def allowed_file(filename):
-            return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+            return '.' in filename and filename.rsplit(
+                '.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
         if request.method == 'POST':
             if 'file' not in request.files:
@@ -40,33 +43,36 @@ def make_endpoints(app):
             file = request.files['file']
             if file.filename == '':
                 flash('No file selected')
-                return render_template('upload.html', message="No file selected")
+                return render_template('upload.html',
+                                       message="No file selected")
 
             if file and allowed_file(file.filename):
                 my_backend.upload(f'{file.filename}', file)
                 # flash("file sucessfully uploaded")
-                return render_template('upload.html',message="file sucessfully uploaded")
+                return render_template('upload.html',
+                                       message="file sucessfully uploaded")
             else:
-                return render_template('upload.html',message="wrong format file")
+                return render_template('upload.html',
+                                       message="wrong format file")
         return render_template("upload.html")
-
 
     @app.route('/signin', methods=['GET', 'POST'])
     def signin():
         if session.get('loggedin', False):
-            return redirect(url_for('home'))  
+            return redirect(url_for('home'))
         message = None
         if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
             username = request.form['username']
             password = request.form['password']
-            
-            if my_backend.sign_in(username, password):  # True if sign up is successful
+
+            if my_backend.sign_in(username,
+                                  password):  # True if sign up is successful
                 session['loggedin'] = True
                 session['username'] = username
-                
+
                 if "page_to_redirect" in session:
                     redirect_page = session.pop("page_to_redirect")
-                    return redirect(redirect_page)   
+                    return redirect(redirect_page)
                 return render_template("main.html",
                                        sent_user_name=username,
                                        signed_in=True)
@@ -74,13 +80,12 @@ def make_endpoints(app):
                 message = "Incorrect username or password"
         return render_template("signin.html", message=message)
 
-
     @app.route('/signup', methods=['GET', 'POST'])
-    def signup():  
+    def signup():
         if session.get('loggedin', False):
             return redirect(url_for('home'))
 
-        message = None  
+        message = None
         if request.method == 'POST':
             print("function calleeddd")
             username = request.form['username']
@@ -89,15 +94,14 @@ def make_endpoints(app):
             #     file.write(f'{username}, {password} this is the returned register details')
             if my_backend.sign_up(username, password):
                 session['loggedin'] = True
-                session['username'] = username                
+                session['username'] = username
                 # return render_template("login_succesfull.html")
                 return render_template("main.html",
                                        sent_user_name=username,
                                        signed_in=True)
             else:
                 message = "Username already present"
-        return render_template("signup.html", message = message)
-
+        return render_template("signup.html", message=message)
 
     @app.route('/about')
     def about():
@@ -107,8 +111,7 @@ def make_endpoints(app):
         # saves the image file into the current directory.
         return render_template("about.html")
 
-    
-    @app.route('/pages/<page_name>', methods = ["GET", "POST"])
+    @app.route('/pages/<page_name>', methods=["GET", "POST"])
     def page(page_name):
         """
         This route handles GET and POST requests for wiki pages.
@@ -119,16 +122,18 @@ def make_endpoints(app):
         #adding sessions to prevent from logging out without logout
         if request.method == "POST":
             if "loggedin" not in session:
-                if request.form.get("review") and not request.form.get("review").isspace():
-                    session["page_to_redirect"] = url_for('page', page_name=page_name)
+                if request.form.get(
+                        "review") and not request.form.get("review").isspace():
+                    session["page_to_redirect"] = url_for('page',
+                                                          page_name=page_name)
                     session["review_text"] = request.form.get("review")
                 return redirect("/signin")
-            else:         
+            else:
                 review_data = request.form.get("review")
-                username = session.get("username")   
+                username = session.get("username")
                 if review_data and not review_data.isspace():
                     my_backend.upload_reviews(page_name, review_data, username)
-                else:                  
+                else:
                     flash(f'ERROR: Empty review.')
                     return redirect(url_for('page', page_name=page_name))
                 return redirect(url_for('page', page_name=page_name))
@@ -141,20 +146,18 @@ def make_endpoints(app):
             else:
                 old_review_text = ""
             return render_template("wiki_page.html",
-                                page_name=final_page_name,
-                                page_content=curr_page_content,
-                                reviews = stored_reviews,
-                                review_text = old_review_text)
-
+                                   page_name=final_page_name,
+                                   page_content=curr_page_content,
+                                   reviews=stored_reviews,
+                                   review_text=old_review_text)
 
     @app.route('/pages')
-    def pages():        
+    def pages():
         """
         gets the page names from bucket and passes it to
         """
         all_page_names = my_backend.get_all_page_names()
         return render_template("pages.html", all_page_names=all_page_names)
-
 
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
@@ -166,7 +169,7 @@ def make_endpoints(app):
         """
         if not session.get('loggedin', False):
             return redirect(url_for('home'))
-        
+
         session.pop('loggedin', None)
         session.pop('username', None)
         return redirect(url_for("home"))

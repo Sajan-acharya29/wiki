@@ -17,7 +17,6 @@ class Backend:
         self.content_bucket = self.client.bucket(self.content_bucket_name)
         self.user_bucket = self.client.bucket(self.user_bucket_name)
 
-
     def get_wiki_page(self, page_name):
         """
         Gets the content of a wiki page from the content bucket with the specified name
@@ -27,7 +26,6 @@ class Backend:
         if not specified_page.exists():
             return f"Erorr: The page {page_name} does not exists in the bucket."
         return specified_page.download_as_text()
-
 
     def get_all_page_names(self):
         """
@@ -39,11 +37,14 @@ class Backend:
         FINANCE_PREFIX_LEN = 9
         blobs = self.content_bucket.list_blobs(prefix="")
         for blob in blobs:
-            if blob.name.endswith(".txt") and blob.name[0:REVIEW_PREFIX_LEN] != "review_" and blob.name[0:FINANCE_PREFIX_LEN] != "finances_":       #just to show the pages instead of reviews
+            if blob.name.endswith(
+                    ".txt"
+            ) and blob.name[0:REVIEW_PREFIX_LEN] != "review_" and blob.name[
+                    0:
+                    FINANCE_PREFIX_LEN] != "finances_":  #just to show the pages instead of reviews
                 curr_page_name = blob.name[:len(blob.name) - 4]
                 all_pages_list.append(curr_page_name)
         return all_pages_list
-
 
     def upload(self, file_name, content):
         """
@@ -51,7 +52,6 @@ class Backend:
         """
         blob = self.content_bucket.blob(file_name)
         blob.upload_from_file(content)
-
 
     def sign_up(self, username, password):
         """
@@ -69,7 +69,6 @@ class Backend:
         curr_user_details = username + ":" + hashed_password
         blob.upload_from_string(curr_user_details)
         return True  # User added successfully
-
 
     def sign_in(self, username, password):
         """
@@ -101,35 +100,38 @@ class Backend:
             return f"Error: Image {image_name} does not exists in the bucket."
         image_bytes = blob.download_as_bytes()
         return image_bytes
-    
+
     """ Below methods for uploading and getting reviews"""
+
     def upload_reviews(self, page_name, curr_user_review, username):
         """
         Uploads a new review to a review_ file in the content bucket, or creates a new review_ file with given filename for the particular page if it doesn't exist
         """
-        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
-        review_txt_file = f"review_{page_name}.txt"        
+        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the review. so we can seperate reviews based on this.
+        review_txt_file = f"review_{page_name}.txt"
         blob = self.content_bucket.blob(review_txt_file)
         if blob.exists():
-          review_text = blob.download_as_text()
-          old_reviews_list = review_text.split(unique_review_connector)
+            review_text = blob.download_as_text()
+            old_reviews_list = review_text.split(unique_review_connector)
         else:
-          old_reviews_list = []
+            old_reviews_list = []
         fresh_review = f"{username}: {curr_user_review}"
         old_reviews_list.append(fresh_review)
-        updated_review_data = unique_review_connector.join(old_reviews_list)   #adds the fresh review to the old list with the unique connecter string added to the end.
+        updated_review_data = unique_review_connector.join(
+            old_reviews_list
+        )  #adds the fresh review to the old list with the unique connecter string added to the end.
         blob.upload_from_string(updated_review_data)
-    
+
     def get_reviews(self, page_name):
         """
         Retrives the reviews from a text file in the content bucket for a given wiki page.
         """
-        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"         #this becomes the connector of the review. so we can seperate reviews based on this.
+        unique_review_connector = "&%!*Project#brainacs_sajan_acharya_@techx2023forSDS826%^&^%$%^&^%$%"  #this becomes the connector of the review. so we can seperate reviews based on this.
         review_txt_file = f"review_{page_name}.txt"
         blob = self.content_bucket.blob(review_txt_file)
         if blob.exists():
-          review_data = blob.download_as_text()
-          review_data_list = review_data.split(unique_review_connector)
-          return review_data_list        
+            review_data = blob.download_as_text()
+            review_data_list = review_data.split(unique_review_connector)
+            return review_data_list
         else:
-          return []
+            return []
