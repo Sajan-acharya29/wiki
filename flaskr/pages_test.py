@@ -337,6 +337,7 @@ def test_home_page1(client):
 #             assert b'<h1 id="element" style="font-size: large;"><span style="font-size: large;"> Financial Experience: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>' not in resp.data
 
 
+
 def mock_sign_in():
     with patch('flaskr.backend.Backend.sign_in') as mock_sign_in:
         yield mock_sign_in
