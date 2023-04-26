@@ -4,8 +4,6 @@ import hashlib
 from flask import send_file
 import io
 import sys
-import os
-import tempfile
 
 
 class Backend:

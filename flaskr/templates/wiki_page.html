@@ -4,7 +4,10 @@
     <h1 class="w3-text-teal">{{page_name}}</h1>
     <!-- <title>{{ page_name }}</title> -->
     <div>
+        {% if image_url != None %}
+        <!-- Display Image -->
         <img src="{{ image_url }}" alt="My Image" width="550" height="345"> 
+        {% endif %}
         <!-- Display the Google Maps snapshot -->
         {% if page_link != '' %}
             <iframe src={{page_link}} id="frame" width="550" height="345" style="border:0; float: right;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
