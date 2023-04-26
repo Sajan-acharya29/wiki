@@ -139,6 +139,7 @@ def make_endpoints(app):
                 return redirect(url_for('page', page_name=page_name))
         else:
             final_page_name = page_name + ".txt"
+            image = my_backend.get_wiki_page_image(page_name)
             curr_page_content = my_backend.get_wiki_page(final_page_name)
             stored_reviews = my_backend.get_reviews(page_name)
             if "review_text" in session:
@@ -147,7 +148,8 @@ def make_endpoints(app):
                 old_review_text = ""
             return render_template(
                 "wiki_page.html",
-                page_name=final_page_name,
+                page_name=page_name,
+                image_url=image,
                 reviews=stored_reviews,
                 review_text=old_review_text,
                 page_content=curr_page_content[0],

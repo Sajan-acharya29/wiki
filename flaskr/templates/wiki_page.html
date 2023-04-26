@@ -1,9 +1,15 @@
 {% extends "main.html" %}
 {% block content %}
 
-    <title>{{ page_name }}</title>
-    <br>
-    <br>
+    <h1 class="w3-text-teal">{{page_name}}</h1>
+    <!-- <title>{{ page_name }}</title> -->
+    <div>
+        <img src="{{ image_url }}" alt="My Image" width="550" height="345"> 
+        <!-- Display the Google Maps snapshot -->
+        {% if page_link != '' %}
+            <iframe src={{page_link}} id="frame" width="550" height="345" style="border:0; float: right;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        {% endif %}
+    </div>
 
      {{ page_content }}   
      <!-- we will get the content from the pages para route. -->
@@ -31,10 +37,6 @@
         </form>
     </div>
     <div>
-        <!-- Display the Google Maps snapshot -->
-        {% if page_link != '' %}
-            <iframe src={{page_link}} id="frame" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        {% endif %}
 
         <style>
         #element {

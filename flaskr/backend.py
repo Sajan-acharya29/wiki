@@ -4,6 +4,8 @@ import hashlib
 from flask import send_file
 import io
 import sys
+import os
+import tempfile
 
 
 class Backend:
@@ -56,6 +58,13 @@ class Backend:
             track += 1
 
         return ("".join(Description), link)
+
+    def get_wiki_page_image(self, image_name):
+        # Get the blob with the image name
+        blob = self.content_bucket.blob(image_name + '.jpg')
+        if not blob:
+            return None
+        return blob.public_url
 
     def get_all_page_names(self):
         """
