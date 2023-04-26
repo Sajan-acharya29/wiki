@@ -7,25 +7,56 @@
         <style>
             nav li {
                 display: inline-block;
-                margin: 12px;
+                margin: 0px;
                 list-style-type: None;
             }
         </style>    
         {% endblock style %}
+
+        <style>
+            body {
+              margin: 0;
+              font-family: Arial, Helvetica, sans-serif;
+            }
+            
+            .topnav {
+              overflow: hidden;
+              background-color: rgb(20, 188, 194);
+            }
+            
+            .topnav a {
+              float: left;
+              color: #f2f2f2;
+              text-align: center;
+              padding: 14px 16px;
+              text-decoration: none;
+              font-size: 17px;
+            }
+            
+            .topnav a:hover {
+              background-color: rgb(221, 221, 221);
+              color: black;
+            }
+            
+            .topnav a.active {
+              background-color: #04AA6D;
+              color: rgb(255, 255, 255);
+            }
+        </style>
     </head>
     <body>
-    <nav>
+    <nav class="topnav">
         <li><a href="/">Home</a></li>
       
         <li><a href="/pages">Pages</a></li>
       
         <li><a href="/about">About</a></li>
       
-        <li>|</li>
+        <li>|<span>
       
         {% if session['loggedin'] %}
-            <li><p>{{ session['username'] }}</p></li> 
-            <li>|</li>
+            <li class="topnav"><p>{{ session['username'] }}</p></li> 
+            </span>|</li>
             <li><a href="/upload">Upload</a></li> 
             <li><a href="/finances">Finances</a></li>                 
             <li><a href="/logout">Logout</a></li>
@@ -36,7 +67,7 @@
         {% endif %}
     </nav>
     {% if signed_in %}
-        <p>Welcome {{ sent_user_name }}</p>
+        <p class=>Welcome {{ sent_user_name }}</p>
     {% endif %}
     <div>
         {% block content %}{% endblock %}
