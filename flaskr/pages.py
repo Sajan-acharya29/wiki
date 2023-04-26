@@ -15,7 +15,8 @@ def make_endpoints(app):
 
         #return render_template("home.html")
         greetings = "Welcome To Brainiacs"
-        return render_template("main.html", greetings=greetings)
+        # return render_template("main.html", greetings=greetings)
+        return render_template("home.html")
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
@@ -149,7 +150,7 @@ def make_endpoints(app):
             return render_template(
                 "wiki_page.html",
                 page_name=page_name,
-                image_url=image,
+                image_url = image,
                 reviews=stored_reviews,
                 review_text=old_review_text,
                 page_content=curr_page_content[0],
