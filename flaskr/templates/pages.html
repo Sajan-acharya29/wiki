@@ -1,48 +1,44 @@
 {% extends "main.html" %}
 {% block content %}
-<body>
-
-<!-- Header -->
-<div class="w3-main" style="margin-left:250px">
-
-    <div class="w3-row w3-padding-64">
-      <div class="w3-twothird w3-container">
-        <h1 class="w3-text-teal">Pages on our Wiki</h1>
-        <ol>
-            {% for curr_page in all_page_names %}
-                <li><a href= {{url_for("page", page_name = curr_page)}} > {{ curr_page }}</a></li>
-            {% endfor %}
-        </ol>
-      </div>
-    </div>
-  <!-- END MAIN -->
-  </div>
-  
-  <script>
-  // Get the Sidebar
-  var mySidebar = document.getElementById("mySidebar");
-  
-  // Get the DIV with overlay effect
-  var overlayBg = document.getElementById("myOverlay");
-  
-  // Toggle between showing and hiding the sidebar, and add overlay effect
-  function w3_open() {
-    if (mySidebar.style.display === 'block') {
-      mySidebar.style.display = 'none';
-      overlayBg.style.display = "none";
-    } else {
-      mySidebar.style.display = 'block';
-      overlayBg.style.display = "block";
+<style>
+    body {
+        background-color: rgb(166, 230, 242);
+        background-size: cover;
+        background-repeat: no-repeat;
+        align-content: center; 
     }
-  }
-  
-  // Close the sidebar with the close button
-  function w3_close() {
-    mySidebar.style.display = "none";
-    overlayBg.style.display = "none";
-  }
-  </script>
+    .new-main {
+        position: fixed;
+        width: auto;
+        margin: auto;
+        padding: 30px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;   
+        /* background-color: rgb(110, 161, 184);         */
+        border: 1px solid rgb(229, 216, 216);
+        background-color: #dcf0fa;
+        color: rgb(10, 11, 11);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+    }
+    .main {
+        height: fit-content;
+        width: fit-content;
+        }
+    </style>
+<body>
+    <div class = "main">
+        <div class = new-main>
+        <h1> Top Places to Visit</h1>
+        <ul>
+            {% for curr_page in all_page_names %}
+                <li><h3><a href= {{url_for("page", page_name = curr_page)}} > {{ curr_page }}</a></h3></li>
+            {% endfor %}
+        </ul>
+    </div>
+    </div>
 </body>
 
 {% endblock %}
-

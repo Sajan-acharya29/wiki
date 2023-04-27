@@ -12,11 +12,8 @@ def make_endpoints(app):
     def home():
         # TODO(Checkpoint Requirement 2 of 3): Change this to use render_template
         # to render main.html on the home page.
-
-        #return render_template("home.html")
         greetings = "Welcome To Brainiacs"
-        # return render_template("main.html", greetings=greetings)
-        return render_template("home.html")
+        return render_template("main.html", greetings=greetings)
 
     @app.route('/upload', methods=['GET', 'POST'])
     def upload_file():
