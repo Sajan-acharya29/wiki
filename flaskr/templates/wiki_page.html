@@ -107,11 +107,11 @@
         {% if Variable_to_store_the_financial_experience != None %}
             <h1 id="element" style="font-size: large;"><span style="font-size: large;"> Average Expenses: </span><span style="color: #39FF33; font-size: large; line-height: 0px;"> {{Variable_to_store_the_financial_experience}} </span> </h1>
         {% endif %}
-            {% if page_link != '' %}
-                <!-- <iframe src={{page_link}} id="frame" width="550" height="345" style="border:0; float: right;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
-                <iframe src={{page_link}} id="frame" width="550" height="345" style="border: 1px solid #ccc; position: fixed; margin-left: 50%; border-radius:10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        {% if page_link != '' %}
+            <!-- <iframe src={{page_link}} id="frame" width="550" height="345" style="border:0; float: right;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
+            <iframe src={{page_link}} id="frame" width="550" height="345" style="border: 1px solid #ccc; margin: 0 225px 0 auto; float: right; border-radius:10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
-            {% endif %}     
+        {% endif %}  
     </div>
     <!-- we will get the content from the pages para route. -->
 
